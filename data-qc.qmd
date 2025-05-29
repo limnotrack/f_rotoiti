@@ -214,6 +214,7 @@ mean_vars <- c("datetime",
                "do_sat_1m", "do_sat_18m",
                "ph_decommissioned", "ph_raw",
                "temp_0m", "temp_2m", "temp_4m", "temp_6m", "temp_9m",
+               "temp_12m", "temp_15m", "temp_18m", "temp_21m",
                "chlorophyll_1m", 
                "wind_speed_m-s", "wind_speed")
 
