@@ -3135,9 +3135,9 @@ extract_device_metadata <- function(data) {
   device_var <- lapply(devices, function(device) {
     data |> 
       dplyr::filter(device_id == device) |> 
-      dplyr::distinct(device_id, var_abbr) |> 
-      dplyr::group_by(device_id) |>
-      dplyr::summarise(var_abbr = paste(unique(var_abbr), collapse = ", "))
+      dplyr::distinct(device_id, var_abbr) #|> 
+      # dplyr::group_by(device_id) |>
+      # dplyr::summarise(var_abbr = paste(unique(var_abbr), collapse = ", "))
   }) |> 
     dplyr::bind_rows() 
   
@@ -3253,7 +3253,7 @@ map_data_to_devices <- function(data, site_devices, device_var,
   if (!is.null(variables)) {
     variables <- variables |> 
       dplyr::select(abbr, label)
-    sensor_map <- sensor_map |> 
+    sensor_map <- sensor_map |>
       dplyr::left_join(variables, by = c("var_abbr" = "abbr"))
   }
   
