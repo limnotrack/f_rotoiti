@@ -1,0 +1,294 @@
+---
+title: "Rotoiti QC Summary"
+execute:
+  warning: false
+format: 
+  html:
+    number-sections: true
+    number-depth: 2
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+      number_sections: true
+tbl-cap-location: top
+---
+
+## Load libraries {.unnumbered}
+
+```{r}
+#| label: load-libraries
+#| include: true
+library(dplyr)
+library(tidyr)
+library(readr)
+library(lubridate)
+library(ggplot2)
+library(scattermore)
+library(DT)
+library(patchwork)
+
+# Set timezone to NZST
+withr::local_locale(c("LC_TIME" = "C"))
+withr::local_timezone("Etc/GMT-12")
+
+# Load functions
+source("R/qc_funs.R")
+
+```
+
+# Download data from GitHub
+
+```{r}
+#| label: download-data
+#| cache: true
+piggyback::pb_download(
+  file = "rotoiti_data_qc.zip",
+  dest = ".",
+  repo = "limnotrack/f_rotoiti",
+  tag = "v0.0.1"
+)
+
+# Unzip the file
+unzip("rotoiti_data_qc.zip")
+
+```
+
+# Read data
+
+```{r}
+#| label: read-site-metadata
+
+path <- "rotoiti_data_qc"
+
+site <- read_csv("rotoiti_data_qc/sites.csv", col_types = cols())
+site_events <- read_csv("rotoiti_data_qc/site_events.csv", col_types = cols())
+site_devices <- read_csv("rotoiti_data_qc/site_devices.csv", col_types = cols())
+device_var <- read_csv("rotoiti_data_qc/device_variable.csv", col_types = cols())
+device_position <- read_csv("rotoiti_data_qc/device_position.csv", 
+                            col_types = cols())
+sensor_reference <- read_csv("rotoiti_data_qc/sensor_reference.csv",
+                             col_types = cols())
+sensor_calibrations <- read_csv("rotoiti_data_qc/sensor_calibrations.csv", 
+                                col_types = cols())
+sensor_scaling <- read_csv("rotoiti_data_qc/sensor_scaling.csv",
+                           col_types = cols())
+variable_ref <- read_csv("rotoiti_data_qc/variables.csv", col_types = cols())
+qc_filters <- read_csv("rotoiti_data_qc/qc_filters.csv", col_types = cols())
+
+```
+
+```{r}
+#| label: read-qc-data
+
+data_wide <- read_csv("rotoiti_data_qc/rotoiti_qc.csv", col_types = cols())
+
+```
+
+Pivot the data to long format and map site devices.
+
+```{r}
+#| label: pivot-to-long-map-devices
+
+data <- data_wide |> 
+  pivot_longer(
+    cols = matches("^(qc_value|qc_code|qc_flag)_"),
+    names_to = c(".value", "var_ref_id"),
+    names_pattern = "^(qc_value|qc_code|qc_flag)_(.+)$"
+  )
+
+# Map site devices to data
+data <- data |> 
+  map_data_to_devices(site_devices = site_devices,
+                      device_var = device_var,
+                      device_position = device_position,
+                      variables = variable_ref
+                      ) 
+head(data)
+
+```
+
+# Summarise by variable
+
+Which variables are in the dataset?
+
+Here is the list of variables in the dataset. The `var_ref_id` is the variable reference ID, which is used to identify the variable in the dataset. The `var_abbr` is the variable abbreviation, which is used to identify the variable in the metadata. The `label` is the variable label, which is used to identify the variable in the metadata. The `reference` is the reference value for the variable, it can be "d" (depth), "h" (height) or "e" elevation and the `value_m` is the value in meters.
+
+```{r}
+#| label: tbl-variables
+
+data |> 
+  select(var_ref_id) |> 
+  distinct() |> 
+  mutate(decode_var_ref(var_ref_id)) |>
+  left_join(variable_ref, by = c("var_abbr" = "abbr")) |> 
+  select(label, var_abbr, var_ref_id, reference, z_relative) |> 
+  datatable(rownames = FALSE,
+            options = list(
+              pageLength = 6,
+              # dom = "t",
+              columnDefs = list(list(className = 'dt-center', targets = "_all"))
+            )
+  ) 
+
+
+```
+
+```{r}
+#| label: summary-by-variable
+
+data |> 
+  group_by(label) |> 
+  summarise(
+    min = min(qc_value, na.rm = TRUE),
+    max = max(qc_value, na.rm = TRUE),
+    median = median(qc_value, na.rm = TRUE),
+    mean = mean(qc_value, na.rm = TRUE),
+    sd = sd(qc_value, na.rm = TRUE),
+    n = n(),
+    na_pct = 100 * sum(is.na(qc_value)) / n(),
+    qc_pct = 100 * sum(qc_code %in% c("QC 300", "QC 400",
+                                      "QC 500", "QC 600")) / n(),
+  ) |> 
+  # Round everything to 1
+  mutate(across(where(is.numeric), ~ round(.x, 1))) |> 
+  DT::datatable()
+
+```
+
+# Quality control
+
+We used a set of quality control codes to assess the quality of the data. The codes are from the [National Environmental Monitoring Standards (NEMS)](https://www.nems.org.nz/). The codes are as follows:
+
+```{r}
+#| label: tbl-qc-codes
+#| tbl-cap: "Quality control codes used in the dataset."
+#| echo: false
+
+qc_codes <- c("Missing Record" = "QC 100",
+              "No Quality or Non Verified" = "QC 200",
+              "Synthetic" = "QC 300",
+              "Poor Quality" = "QC 400",
+              "Fair Quality" = "QC 500",
+              "Good Quality" = "QC 600")
+
+qc_code_col_scale = c(
+  "QC 100" = "#FF0000",
+  "QC 200" = "#8B5A00",
+  "QC 300" = "#D3D3D3",
+  "QC 400" = "#FFA500",
+  "QC 500" = "#00BFFF",
+  "QC 600" = "#006400"
+)
+
+qc_df <- data.frame(
+  qc_code = qc_codes,
+  qc_zone = names(qc_codes),
+  qc_code_col = unname(qc_code_col_scale),
+  qc_code_desc = c(
+    "Data are missing", 
+    "Data are raw or of unknown quality",
+    "Data are synthetic or derived from other data or has been corrected for baseline drift or noise",
+    "Data that have been compromised in their ability to represent the true value of the measurement",
+    "Measured data that do not meet operational standards/best practice at the time of acquisition, and/or undergone significant modification. The data are considered to be a fair representation of the monitored parameter.",
+    "Data measured using best practice that meets operational standards at the time of acquisition. The data are considered to be a good representation of the monitored parameter."
+  ),
+  stringsAsFactors = FALSE
+)
+
+qc_df |> 
+  select(qc_code, qc_zone, qc_code_desc) |>
+  rename(`Quality Control Code` = qc_code,
+         `Quality Control Zone` = qc_zone,
+         `Description` = qc_code_desc) |>
+  datatable(rownames = FALSE,
+            options = list(
+              pageLength = 6,
+              dom = "t",
+              columnDefs = list(list(className = 'dt-center', targets = "_all"))
+            )
+  ) |> 
+  formatStyle(
+    "Quality Control Code",
+    target = "row",
+    backgroundColor = styleEqual(
+      qc_df$qc_code,
+      qc_df$qc_code_col
+    )
+  ) |> 
+  # Bold all text
+  formatStyle(
+    columns = c("Quality Control Code", "Quality Control Zone", "Description"),
+    color = "white"
+  ) |> 
+  # BOld first column
+  formatStyle(
+    columns = "Quality Control Code",
+    fontWeight = "bold"
+  ) 
+  
+```
+
+# Visualise each variable
+
+The plots below show the A) time series of the data, B) the quality codes (QC)
+attributed to each data point, C) the device used to measure the data.
+
+## Temperature
+
+```{r}
+#| label: fig-temp-doy-qc
+#| fig.cap: "Temperature data at various depths quality control."
+#| warning: false
+#| message: false
+#| fig.width: 14
+#| fig.height: 10
+
+plot_var_ts_qc(data = data, var_ref_id = c("t_wtr_d50", "t_wtr_d200",
+                                           "t_wtr_d400", "t_wtr_d600",
+                                           "t_wtr_d900", "t_wtr_d1200", 
+                                           "t_wtr_d1500", "t_wtr_d1800", 
+                                           "t_wtr_d1810",  "t_wtr_d2100"))
+
+```
+
+## Oxygen saturation
+
+```{r}
+#| label: fig-oxygen-sat-doy-qc
+#| fig.cap: "Oxygen saturation data at 1 and 18m depths quality control."
+
+
+plot_var_ts_qc(data = data, var_ref_id = c("c_do_sat_d100", "c_do_sat_d1800"))
+
+```
+
+## Oxygen concentration
+
+```{r}
+#| label: fig-oxygen-doy-qc
+#| fig.cap: "Oxygen data at 1 and 18m depths quality control."
+
+plot_var_ts_qc(data = data, var_ref_id = c("c_do_d100", "c_do_d1800"))
+
+```
+
+## Chlorophyll
+
+```{r}
+#| label: fig-chla-doy-qc
+#| fig.cap: "Chlorophyll data at 1.0m quality control."
+
+plot_var_ts_qc(data = data, var_ref_id = c("f_chl_d100"))
+
+```
+
+
+# Download data
+
+The data used in this analysis is available for download. The data is in CSV 
+format and is zipped. The data is in the `rotoiti_data_qc.zip` folder. The data can
+be downloaded either from [GitHub](https://github.com/limnotrack/f_rotoiti/releases/tag/v0.0.1)
+or from the button below.
+
+<a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip" download class="btn btn-primary">Download Data</a>

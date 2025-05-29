@@ -1,0 +1,500 @@
+---
+title: "Metadata"
+execute:
+  warning: false
+format: 
+  html:
+    number-sections: true
+    number-depth: 2
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+      number_sections: true
+---
+
+The metadata for the Rotoiti project is within the `rotoiti_data_qc.zip` folder. This folder contains the metadata for the project, including the device position, device variable, quality control filters, sensor calibrations, sensor reference, sensor scaling, site devices, site events, sites and variables.
+
+In this document, we will describe the contents of each file in the `rotoiti_data_qc.zip` folder. The files are in CSV format.
+
+## Load libraries {.unnumbered}
+
+```{r}
+#| label: load-libraries
+#| include: true
+#| warning: false
+
+library(dplyr)
+library(readr)
+library(DT)
+
+# Set timezone to NZST
+withr::local_locale(c("LC_TIME" = "C"))
+withr::local_timezone("Etc/GMT-12")
+
+```
+
+# Download data from GitHub
+
+```{r}
+#| label: download-data
+#| cache: true
+#| warning: false
+piggyback::pb_download(
+  file = "rotoiti_data_qc.zip",
+  dest = ".",
+  repo = "limnotrack/f_rotoiti",
+  tag = "v0.0.1"
+)
+
+# Unzip the file
+unzip("rotoiti_data_qc.zip")
+list.files("rotoiti_data_qc", recursive = TRUE)
+
+```
+
+# Files
+
+```{r}
+#| label: files
+#| echo: false
+
+files <- list.files("rotoiti_data_qc", recursive = TRUE)
+data.frame(
+  File = files,
+  Description = NA
+) |> 
+  mutate(
+    Description = case_when(
+      File == "device_position.csv" ~ "Device position",
+      File == "device_variable.csv" ~ "Mapping of variables onto devices",
+      File == "qc_filters.csv" ~ "Quality control filters",
+      File == "sensor_calibrations.csv" ~ "Sensor calibrations",
+      File == "rotoiti_qc.csv" ~ "Quality controlled data",
+      File == "sensor_reference.csv" ~ "Sensor reference measurements",
+      File == "sensor_scaling.csv" ~ "Sensor scaling relationships",
+      File == "site_devices.csv" ~ "Mapping of devices to sites",
+      File == "site_events.csv" ~ "Site events",
+      File == "sites.csv" ~ "Site metadata",
+      File == "variables.csv" ~ "Variable description"
+    )
+  ) |> 
+  datatable(
+    options = list(
+      pageLength = 15,
+      dom = "t"
+    ), rownames = FALSE
+  ) 
+
+```
+
+## Device position
+
+The device position is stored in a CSV file. The file contains the following columns:
+
+-   `device_id`: The unique identifier for the device.
+
+-   `reference`: The location of the device. This can be depth ("d"), height ("h") or elevation ("e").
+
+-   `z_relative`: The relative position of the device in meters. This is the distance from the reference point to the device.
+
+```{r}
+#| label: device-position
+#| results: hide
+
+device_position <- read_csv("rotoiti_data_qc/device_position.csv", col_types = cols())
+device_position
+
+```
+
+```{r}
+#| label: tbl-device-position
+#| tbl-cap: Device position and relative distance.
+#| echo: false
+
+device_position |> 
+  datatable(
+    options = list(
+      pageLength = 5,
+      lengthMenu = c(5, 10, 20),
+      scrollX = TRUE,
+      dom = "t"
+    ), rownames = FALSE
+  ) 
+```
+
+
+## Device variable
+
+The device variable is stored in a CSV file. The file contains the following columns:
+
+-   `device_id`: The unique identifier for the device.
+
+-   `var_abbr`: The variable abbreviation. This is the short name for the variable.
+
+```{r}
+#| label: device-variable
+#| results: hide
+
+device_variable <- read_csv("rotoiti_data_qc/device_variable.csv", col_types = cols())
+device_variable
+
+```
+
+```{r}
+#| label: tbl-device-variable
+#| tbl-cap: Device variable mapping.
+#| echo: false
+
+ device_variable |> 
+  datatable(
+    options = list(
+      pageLength = 5,
+      lengthMenu = c(5, 10, 20),
+      scrollX = TRUE,
+      dom = "t"
+    ), rownames = FALSE
+  ) 
+ 
+```
+
+
+## Quality control filters
+
+The quality control filters are stored in a CSV file. The file contains the following columns:
+
+-   `var_abbr`: The variable abbreviation. This is the short name for the variable.
+
+-   `low`: The lower limit for the variable. This is the minimum value for the variable.
+
+-   `high`: The upper limit for the variable. This is the maximum value for the variable.
+
+-   `roc`: The rate of change for the variable. This is the maximum rate of change for the variable.
+
+-   `consec`: The consecutive number of points for the variable. This is the minimum number of consecutive points for the variable.
+
+-   `interp`: The interpolation for the variable. This is the maximum number of points for the variable.
+
+```{r}
+#| label: qc-filters
+#| results: hide
+
+qc_filters <- read_csv("rotoiti_data_qc/qc_filters.csv", col_types = cols())
+
+qc_filters 
+
+```
+
+```{r}
+#| label: tbl-qc-filters
+#| tbl-cap: Quality control filters.
+#| echo: false
+
+qc_filters |> 
+  datatable(
+    options = list(
+      pageLength = 5,
+      lengthMenu = c(5, 10, 20),
+      scrollX = TRUE,
+      dom = "t"
+    ), rownames = FALSE
+  )
+
+```
+
+
+## Quality controlled data
+
+This is the finished quality controlled data. There is a summary of this data on the [Quality control page](rotoiti-qc-summary.html).
+
+## Sensor calibrations
+
+The sensor calibrations are stored in a CSV file. The file contains the following columns: - `device_id`: The unique identifier for the device. - `date`: The date of the calibration. - `site`: The site of the calibration. - `variable`: The variable of the calibration. - `temperature`: The temperature of the calibration. - `type`: The type of calibration. - `comment`: The comment for the calibration.
+
+```{r}
+#| label: sensor-calibrations
+#| results: hide
+
+sensor_calibrations <- read_csv("rotoiti_data_qc/sensor_calibrations.csv", col_types = cols())
+
+sensor_calibrations
+
+```
+
+```{r}
+#| label: tbl-sensor-calibrations
+#| tbl-cap: Sensor calibrations.
+#| echo: false
+
+ sensor_calibrations |> 
+  datatable(
+    options = list(
+      pageLength = 5,
+      lengthMenu = c(5, 10, 20),
+      scrollX = TRUE
+    ), rownames = FALSE
+  )
+```
+
+
+## Sensor reference
+
+The sensor reference is stored in a CSV file. The file contains the following columns:
+
+-   `device_id`: The unique identifier for the device.
+
+-   `date`: The date of the reference measurement.
+
+-   `reference_type`: The type of reference measurement.
+
+-   `value_actual`: The actual value of the reference measurement.
+
+-   `units_value`: The units of the actual value.
+
+-   `value_measured`: The measured value of the reference measurement.
+
+-   `units_sensor`: The units of the measured value.
+
+-   `temperature`: The temperature of the reference measurement. 
+
+-   `comment`: The comment for the reference measurement.
+
+
+```{r}
+#| label: sensor-reference
+#| results: hide
+
+sensor_reference <- read_csv("rotoiti_data_qc/sensor_reference.csv", col_types = cols())
+
+sensor_reference
+
+```
+
+```{r}
+#| label: tbl-sensor-reference
+#| tbl-cap: Sensor reference measurements.
+#| echo: false
+
+ sensor_reference |> 
+  datatable(
+    options = list(
+      pageLength = 5,
+      lengthMenu = c(5, 10, 20),
+      scrollX = TRUE
+    ), rownames = FALSE
+  )
+```
+
+
+## Sensor scaling
+
+The sensor scaling is stored in a CSV file. The file contains the following columns:
+
+-   `device_id`: The unique identifier for the device.
+
+-   `date`: The date of the scaling.
+
+-   `offset`: The offset for the scaling.
+
+-   `multiplier`: The multiplier for the scaling.
+
+-   `range`: The range for the scaling.
+
+-   `log_multiplier`: The logger multiplier for the scaling.
+
+-   `source`: The source of the scaling factors.
+
+-   `comment`: The comment for the scaling.
+
+```{r}
+#| label: sensor-scaling
+#| results: hide
+
+sensor_scaling <- read_csv("rotoiti_data_qc/sensor_scaling.csv", col_types = cols())
+
+sensor_scaling
+
+```
+
+```{r}
+#| label: tbl-sensor-scaling
+#| tbl-cap: Sensor scaling relationships.
+#| echo: false
+
+ sensor_scaling |> 
+  datatable(
+    options = list(
+      pageLength = 5,
+      lengthMenu = c(5, 10, 20),
+      scrollX = TRUE
+    ), rownames = FALSE
+  )
+
+```
+
+
+## Site devices
+
+The site devices are stored in a CSV file. The file contains the following columns:
+
+-   `site`: The site of the device.
+
+-   `device_id`: The unique identifier for the device.
+
+-   `date_from`: The date the device was installed.
+
+-   `date_to`: The date the device was removed.
+
+-   `notes_device`: The notes for the device.
+
+-   `notes`: The notes for the site.
+
+```{r}
+#| label: site-devices
+#| results: hide
+
+site_devices <- read_csv("rotoiti_data_qc/site_devices.csv", col_types = cols())
+
+site_devices
+
+```
+
+```{r}
+#| label: tbl-site-devices
+#| tbl-cap: Site devices.
+#| echo: false
+
+ site_devices |> 
+  datatable(
+    options = list(
+      pageLength = 5,
+      lengthMenu = c(5, 10, 20),
+      scrollX = TRUE
+    ), rownames = FALSE
+  )
+
+```
+
+
+## Site events
+
+The site events are stored in a CSV file. The file contains the following columns:
+
+-   `site`: The site of the event.
+
+-   `date`: The date of the event.
+
+-   `site_visit`: Was the site visited?
+
+-   `variables`: The variables of the event.
+
+-   `action`: The action of the event. Can be "deployed", "removed", "cleaned", "rebooted" or "other".
+
+-   `comment`: The comment for the event.
+
+```{r}
+#| label: site-events
+#| results: hide
+
+site_events <- read_csv("rotoiti_data_qc/site_events.csv", col_types = cols())
+
+site_events
+
+```
+
+```{r}
+#| label: tbl-site-events
+#| tbl-cap: Site events.
+#| echo: false
+
+ site_events |> 
+  datatable(
+    options = list(
+      pageLength = 5,
+      lengthMenu = c(5, 10, 20),
+      scrollX = TRUE
+    ), rownames = FALSE
+  )
+
+```
+
+
+## Sites
+
+The sites are stored in a CSV file. The file contains the following columns:
+
+-   `site`: The site of the device.
+
+-   `location`: The location of the site.
+
+-   `type`: The type of site. Can be "lake", "river" or "other".
+
+-   `customer`: The customer of the site.
+
+-   `lon`: The longitude of the site.
+
+-   `lat`: The latitude of the site.
+
+-   `elev`: The elevation of the site.
+
+```{r}
+#| label: sites
+#| results: hide
+
+sites <- read_csv("rotoiti_data_qc/sites.csv", col_types = cols())
+
+sites
+
+```
+
+```{r}
+#| label: tbl-sites
+#| tbl-cap: Sites.
+#| echo: false
+
+ sites |> 
+  datatable(
+    options = list(
+      pageLength = 5,
+      lengthMenu = c(5, 10, 20),
+      scrollX = TRUE
+    ), rownames = FALSE
+  )
+ 
+```
+
+
+## Variables
+
+The variables are stored in a CSV file. The file contains the following columns:
+
+-   `var_abbr`: The variable abbreviation. This is the short name for the variable.
+-   `full_text`: The full text of the variable. This is the long name for the variable.
+-   `parsed`: The parsed name of the variable. This is the name used for plotting.
+-   `label`: The label of the variable. This is the name used for the legend.
+
+```{r}
+#| label: variables
+#| results: hide
+
+variables <- read_csv("rotoiti_data_qc/variables.csv", col_types = cols())
+
+variables
+```
+
+```{r}
+#| label: tbl-variables
+#| tbl-cap: Variables.
+#| echo: false
+
+ variables |> 
+  datatable(
+    options = list(
+      pageLength = 5,
+      lengthMenu = c(5, 10, 20),
+      scrollX = TRUE
+    ), rownames = FALSE
+  )
+ 
+```
+
