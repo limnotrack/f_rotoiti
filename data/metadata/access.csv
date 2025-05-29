@@ -1,0 +1,13 @@
+fileName,name,contentUrl,encodingFormat
+device_position.csv,device_position,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+device_variable.csv,device_variable,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+qc_filters.csv,qc_filters,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+qc_update_table.csv,qc_update_table,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+rotoiti_qc.csv,rotoiti_qc,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+sensor_calibrations.csv,sensor_calibrations,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+sensor_reference.csv,sensor_reference,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+sensor_scaling.csv,sensor_scaling,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+site_devices.csv,site_devices,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+site_events.csv,site_events,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+sites.csv,sites,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv
+variables.csv,variables,https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip,csv

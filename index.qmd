@@ -1,0 +1,1410 @@
+---
+# title: "Lake Rotoiti fixed buoy data"
+format:
+  html:
+    title-block: false
+    page-layout: article
+    include-in-header:
+      text: |
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            $('#attributes').DataTable({
+              paging: true,
+              searching: true,
+              ordering: true,
+                pageLength: 5,
+              order: [[0, 'asc']],  // Default sort on first column
+              language: {
+                search: "Filter attributes:",
+                lengthMenu: "Show _MENU_ entries"
+              }
+            });
+          });
+        </script>
+---
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "type": "Dataset",
+  "name": "Lake Rotoiti fixed buoy data",
+  "creator": [
+    {
+      "type": "Person",
+      "id": "0000-0002-3834-8868",
+      "email": "tadhg@limnotrack.com",
+      "affiliation": "Limnotrack",
+      "name": "Tadhg Moore"
+    },
+    {
+      "type": "Person",
+      "id": "0000-0001-5784-9767",
+      "email": "chris@limnotrack.com",
+      "affiliation": "Limnotrack",
+      "name": "Chris McBride"
+    }
+  ],
+  "description": "This dataset contains high-frequency environmental measurements collected by a fixed sensor buoy deployed in Lake Rotoiti. The buoy was equipped with a temperature string spanning the water column, along with surface sensors for chlorophyll-a, and dissolved oxygen. Additional dissolved oxygen measurements were recorded at the lake bottom. A meteorological station mounted on the buoy recorded atmospheric conditions including wind speed, and wind direction. These observations support the characterization of physical, chemical, and biological dynamics in Lake Rotoiti over time.",
+  "datePublished": null,
+  "keywords": ["lake monitoring", "high-frequency data", "sensor buoy", "water quality", "meteorological measurements"],
+  "funder": "Bay of Plenty Regional Council",
+  "temporalCoverage": "2007-01-12 5:00/2022-05-04 11:45:00",
+  "license": "CC BY 4.0",
+  "spatialCoverage": {
+    "type": "Place",
+    "name": "Lake Rotoiti in the Bay of Plenty region in New Zealand.",
+    "geo": {
+      "type": "GeoShape",
+      "box": "-38.01112 176.4889 -38.05922 176.329"
+    }
+  },
+  "variableMeasured": [
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "site",
+      "description": "Site of measurement"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "device_id",
+      "description": "Device ID"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "reference",
+      "description": "Reference point, can be either depth (d), height (h) or elevation (e)"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "z_relative",
+      "description": "Relative distance from reference point"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "var_abbr",
+      "description": "Variable abbreviation"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "low",
+      "description": "Low value to set values to NA if they are below this value"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "high",
+      "description": "High value to set values to NA if they are above this value"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "roc",
+      "description": "Rate of change to set values to NA which change from the previous value by greater than this value"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "consec",
+      "description": "Set values to NA if there are consecutive values greater than this value"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "interp",
+      "description": "Interpolate values if there is a data gap less than this value"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "datetime",
+      "description": "Date and time of measurement"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree_Celsius",
+      "name": "qc_value_t_wtr_d50",
+      "description": "Water temperature at 0.5m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree_Celsius",
+      "name": "qc_value_t_wtr_d200",
+      "description": "Water temperature at 2.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree_Celsius",
+      "name": "qc_value_t_wtr_d400",
+      "description": "Water temperature at 4.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree_Celsius",
+      "name": "qc_value_t_wtr_d600",
+      "description": "Water temperature at 6.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree_Celsius",
+      "name": "qc_value_t_wtr_d900",
+      "description": "Water temperature at 9.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree_Celsius",
+      "name": "qc_value_t_wtr_d1200",
+      "description": "Water temperature at 12.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree_Celsius",
+      "name": "qc_value_t_wtr_d1500",
+      "description": "Water temperature at 15.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree_Celsius",
+      "name": "qc_value_t_wtr_d1810",
+      "description": "Water temperature at 18.1m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree_Celsius",
+      "name": "qc_value_t_wtr_d1800",
+      "description": "Water temperature at 18.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree_Celsius",
+      "name": "qc_value_t_wtr_d2100",
+      "description": "Water temperature at 21.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "mg/l",
+      "name": "qc_value_c_do_d100",
+      "description": "Dissolved oxygen concentration at 1.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "mg/l",
+      "name": "qc_value_c_do_d1800",
+      "description": "Dissolved oxygen concentration at 18.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "percent",
+      "name": "qc_value_c_do_sat_d100",
+      "description": "Dissolved oxygen percent saturation at 1.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "percent",
+      "name": "qc_value_c_do_sat_d1800",
+      "description": "Dissolved oxygen percent saturation at 18.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "m/s",
+      "name": "qc_value_w_spd_h150",
+      "description": "Wind speed at 1.5m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "degree",
+      "name": "qc_value_w_dir_h150",
+      "description": "Wind direction at 1.5m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": "RFU",
+      "name": "qc_value_f_chl_d100",
+      "description": "Chlorophyll fluorescence at 1.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_t_wtr_d50",
+      "description": "Quality control code for water temperature at 0.5m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_t_wtr_d200",
+      "description": "Quality control code for water temperature at 2.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_t_wtr_d400",
+      "description": "Quality control code for water temperature at 4.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_t_wtr_d600",
+      "description": "Quality control code for water temperature at 6.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_t_wtr_d900",
+      "description": "Quality control code for water temperature at 9.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_t_wtr_d1200",
+      "description": "Quality control code for water temperature at 12.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_t_wtr_d1500",
+      "description": "Quality control code for water temperature at 15.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_t_wtr_d1810",
+      "description": "Quality control code for water temperature at 18.1m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_t_wtr_d1800",
+      "description": "Quality control code for water temperature at 18.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_t_wtr_d2100",
+      "description": "Quality control code for water temperature at 21.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_c_do_d100",
+      "description": "Quality control code for dissolved oxygen concentration at 1.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_c_do_d1800",
+      "description": "Quality control code for dissolved oxygen concentration at 18.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_c_do_sat_d100",
+      "description": "Quality control code for dissolved oxygen percent saturation at 1.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_c_do_sat_d1800",
+      "description": "Quality control code for dissolved oxygen percent saturation at 18.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_w_spd_h150",
+      "description": "Quality control code for wind speed at 1.5m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_w_dir_h150",
+      "description": "Quality control code for wind direction at 1.5m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_code_f_chl_d100",
+      "description": "Quality control code for chlorophyll fluorescence at 1.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_t_wtr_d50",
+      "description": "Quality control flag for water temperature at 0.5m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_t_wtr_d200",
+      "description": "Quality control flag for water temperature at 2.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_t_wtr_d400",
+      "description": "Quality control flag for water temperature at 4.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_t_wtr_d600",
+      "description": "Quality control flag for water temperature at 6.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_t_wtr_d900",
+      "description": "Quality control flag for water temperature at 9.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_t_wtr_d1200",
+      "description": "Quality control flag for water temperature at 12.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_t_wtr_d1500",
+      "description": "Quality control flag for water temperature at 15.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_t_wtr_d1810",
+      "description": "Quality control flag for water temperature at 18.1m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_t_wtr_d1800",
+      "description": "Quality control flag for water temperature at 18.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_t_wtr_d2100",
+      "description": "Quality control flag for water temperature at 21.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_c_do_d100",
+      "description": "Quality control flag for dissolved oxygen concentration at 1.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_c_do_d1800",
+      "description": "Quality control flag for dissolved oxygen concentration at 18.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_c_do_sat_d100",
+      "description": "Quality control flag for dissolved oxygen percent saturation at 1.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_c_do_sat_d1800",
+      "description": "Quality control flag for dissolved oxygen percent saturation at 18.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_w_spd_h150",
+      "description": "Quality control flag for wind speed at 1.5m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_w_dir_h150",
+      "description": "Quality control flag for wind direction at 1.5m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "qc_flag_f_chl_d100",
+      "description": "Quality control flag for chlorophyll fluorescence at 1.0m"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "date",
+      "description": "Date of calibration"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "variable",
+      "description": "Variable abbreviation"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "temperature",
+      "description": "Temperature at calibration"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "type",
+      "description": "Type of calibration"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "comment",
+      "description": "Comment"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "date",
+      "description": "Date of reference measurement"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "reference_type",
+      "description": "Type of reference (e.g. buffer, saturated water)"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "value_actual",
+      "description": "Value of the reference"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "units_value",
+      "description": "Units of the value"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "value_measured",
+      "description": "Measured value by the sensor"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "units_sensor",
+      "description": "Units of the sensor"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "temperature",
+      "description": "Temperature of the reference type at measurement"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "date",
+      "description": "Date"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "offset",
+      "description": "Offset applied to sensor measurement"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "multiplier",
+      "description": "Multiplier applied to sensor measurement"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "range",
+      "description": "Range of measurements"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "log_multiplier",
+      "description": "Multiplier applied at the logger"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "source",
+      "description": "Source of information"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "date_from",
+      "description": "Date device is deployed to site"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "date_to",
+      "description": "Date device is retrieved from site"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "site_visit",
+      "description": "Was the site visited, logical value"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "variables",
+      "description": "List of variables or can be all"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "action",
+      "description": "Type of action at site such as deployed, removed, cleaned"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "comments",
+      "description": "Comment"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "location",
+      "description": "Location of site"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "type",
+      "description": "Type of monitoring site"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "customer",
+      "description": "Customer"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "lon",
+      "description": "Longitude"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "lat",
+      "description": "Latitude"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "elev",
+      "description": "Elevation"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "type",
+      "description": "Type of variable"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "abbr",
+      "description": "Abbreviation of variable"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "full_text",
+      "description": "Full text variable name"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "parsed",
+      "description": "Variable name to be parsed"
+    },
+    {
+      "type": "PropertyValue",
+      "unitText": null,
+      "name": "label",
+      "description": "Label for variable"
+    }
+  ],
+  "distribution": [
+    {
+      "type": "DataDownload",
+      "name": "device_position",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "device_variable",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "qc_filters",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "qc_update_table",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "rotoiti_qc",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "sensor_calibrations",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "sensor_reference",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "sensor_scaling",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "site_devices",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "site_events",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "sites",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    },
+    {
+      "type": "DataDownload",
+      "name": "variables",
+      "contentUrl": "https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip",
+      "encodingFormat": "csv"
+    }
+  ]
+}
+
+</script>
+
+<style>
+  body {
+    font-size: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    margin: 0 auto;
+    padding: 1rem;
+    max-width: 1200px;
+  }
+
+  #map {
+    height: 20rem;
+  }
+
+  #attributes-wrapper,
+  #jsonld-wrapper {
+    height: 20rem;
+    overflow-y: scroll;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th {
+    border-bottom: 1px solid black;
+  }
+
+  th, td {
+    padding: 0.25rem;
+  }
+
+  table.listing td {
+    border: 1px solid #CCC;
+  }
+
+  table.listing tr td:first-child {
+    background-color: #EEE;
+  }
+
+  table.listing ul {
+    margin: 0 0 0 1.5rem;
+    padding: 0;
+  }
+</style>
+
+<h1>Lake Rotoiti fixed buoy data</h1>
+<p><strong>Description:</strong> This dataset contains high-frequency environmental measurements collected by a fixed sensor buoy deployed in Lake Rotoiti. The buoy was equipped with a temperature string spanning the water column, along with surface sensors for chlorophyll-a, and dissolved oxygen. Additional dissolved oxygen measurements were recorded at the lake bottom. A meteorological station mounted on the buoy recorded atmospheric conditions including wind speed, and wind direction. These observations support the characterization of physical, chemical, and biological dynamics in Lake Rotoiti over time.</p>
+
+<h2>Bibliographic</h2>
+
+<table class="listing">
+  <tr>
+    <td>Published</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Keywords</td>
+    <td>
+      <ul>
+          <li>lake monitoring</li>
+          <li>high-frequency data</li>
+          <li>sensor buoy</li>
+          <li>water quality</li>
+          <li>meteorological measurements</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>Funder</td>
+    <td>Bay of Plenty Regional Council</td>
+  </tr>
+  <tr>
+    <td>License</td>
+    <td>CC BY 4.0</td>
+  </tr>
+</table>
+
+<h2>Coverage</h2>
+
+<h3>Temporal</h3>
+<table class="listing">
+  <tr>
+    <td>Begin</td>
+    <td>2007-01-12 5:00</td>
+  </tr>
+  <tr>
+    <td>End</td>
+    <td>2022-05-04 11:45:00</td>
+  </tr>
+</table>
+
+<h3>Spatial</h3>
+<pre><code></code></pre>
+<div id="map"></div>
+
+<h2>Attributes</h2>
+
+<div id="attributes-wrapper">
+  <table id="attributes">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Unit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>site</code></td>
+        <td>Site of measurement</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>device_id</code></td>
+        <td>Device ID</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>reference</code></td>
+        <td>Reference point, can be either depth (d), height (h) or elevation (e)</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>z_relative</code></td>
+        <td>Relative distance from reference point</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>var_abbr</code></td>
+        <td>Variable abbreviation</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>low</code></td>
+        <td>Low value to set values to NA if they are below this value</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>high</code></td>
+        <td>High value to set values to NA if they are above this value</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>roc</code></td>
+        <td>Rate of change to set values to NA which change from the previous value by greater than this value</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>consec</code></td>
+        <td>Set values to NA if there are consecutive values greater than this value</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>interp</code></td>
+        <td>Interpolate values if there is a data gap less than this value</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>datetime</code></td>
+        <td>Date and time of measurement</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_value_t_wtr_d50</code></td>
+        <td>Water temperature at 0.5m</td>
+        <td>degree_Celsius</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_t_wtr_d200</code></td>
+        <td>Water temperature at 2.0m</td>
+        <td>degree_Celsius</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_t_wtr_d400</code></td>
+        <td>Water temperature at 4.0m</td>
+        <td>degree_Celsius</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_t_wtr_d600</code></td>
+        <td>Water temperature at 6.0m</td>
+        <td>degree_Celsius</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_t_wtr_d900</code></td>
+        <td>Water temperature at 9.0m</td>
+        <td>degree_Celsius</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_t_wtr_d1200</code></td>
+        <td>Water temperature at 12.0m</td>
+        <td>degree_Celsius</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_t_wtr_d1500</code></td>
+        <td>Water temperature at 15.0m</td>
+        <td>degree_Celsius</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_t_wtr_d1810</code></td>
+        <td>Water temperature at 18.1m</td>
+        <td>degree_Celsius</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_t_wtr_d1800</code></td>
+        <td>Water temperature at 18.0m</td>
+        <td>degree_Celsius</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_t_wtr_d2100</code></td>
+        <td>Water temperature at 21.0m</td>
+        <td>degree_Celsius</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_c_do_d100</code></td>
+        <td>Dissolved oxygen concentration at 1.0m</td>
+        <td>mg/l</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_c_do_d1800</code></td>
+        <td>Dissolved oxygen concentration at 18.0m</td>
+        <td>mg/l</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_c_do_sat_d100</code></td>
+        <td>Dissolved oxygen percent saturation at 1.0m</td>
+        <td>percent</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_c_do_sat_d1800</code></td>
+        <td>Dissolved oxygen percent saturation at 18.0m</td>
+        <td>percent</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_w_spd_h150</code></td>
+        <td>Wind speed at 1.5m</td>
+        <td>m/s</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_w_dir_h150</code></td>
+        <td>Wind direction at 1.5m</td>
+        <td>degree</td>
+      </tr>
+      <tr>
+        <td><code>qc_value_f_chl_d100</code></td>
+        <td>Chlorophyll fluorescence at 1.0m</td>
+        <td>RFU</td>
+      </tr>
+      <tr>
+        <td><code>qc_code_t_wtr_d50</code></td>
+        <td>Quality control code for water temperature at 0.5m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_t_wtr_d200</code></td>
+        <td>Quality control code for water temperature at 2.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_t_wtr_d400</code></td>
+        <td>Quality control code for water temperature at 4.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_t_wtr_d600</code></td>
+        <td>Quality control code for water temperature at 6.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_t_wtr_d900</code></td>
+        <td>Quality control code for water temperature at 9.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_t_wtr_d1200</code></td>
+        <td>Quality control code for water temperature at 12.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_t_wtr_d1500</code></td>
+        <td>Quality control code for water temperature at 15.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_t_wtr_d1810</code></td>
+        <td>Quality control code for water temperature at 18.1m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_t_wtr_d1800</code></td>
+        <td>Quality control code for water temperature at 18.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_t_wtr_d2100</code></td>
+        <td>Quality control code for water temperature at 21.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_c_do_d100</code></td>
+        <td>Quality control code for dissolved oxygen concentration at 1.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_c_do_d1800</code></td>
+        <td>Quality control code for dissolved oxygen concentration at 18.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_c_do_sat_d100</code></td>
+        <td>Quality control code for dissolved oxygen percent saturation at 1.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_c_do_sat_d1800</code></td>
+        <td>Quality control code for dissolved oxygen percent saturation at 18.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_w_spd_h150</code></td>
+        <td>Quality control code for wind speed at 1.5m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_w_dir_h150</code></td>
+        <td>Quality control code for wind direction at 1.5m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_code_f_chl_d100</code></td>
+        <td>Quality control code for chlorophyll fluorescence at 1.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_t_wtr_d50</code></td>
+        <td>Quality control flag for water temperature at 0.5m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_t_wtr_d200</code></td>
+        <td>Quality control flag for water temperature at 2.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_t_wtr_d400</code></td>
+        <td>Quality control flag for water temperature at 4.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_t_wtr_d600</code></td>
+        <td>Quality control flag for water temperature at 6.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_t_wtr_d900</code></td>
+        <td>Quality control flag for water temperature at 9.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_t_wtr_d1200</code></td>
+        <td>Quality control flag for water temperature at 12.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_t_wtr_d1500</code></td>
+        <td>Quality control flag for water temperature at 15.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_t_wtr_d1810</code></td>
+        <td>Quality control flag for water temperature at 18.1m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_t_wtr_d1800</code></td>
+        <td>Quality control flag for water temperature at 18.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_t_wtr_d2100</code></td>
+        <td>Quality control flag for water temperature at 21.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_c_do_d100</code></td>
+        <td>Quality control flag for dissolved oxygen concentration at 1.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_c_do_d1800</code></td>
+        <td>Quality control flag for dissolved oxygen concentration at 18.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_c_do_sat_d100</code></td>
+        <td>Quality control flag for dissolved oxygen percent saturation at 1.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_c_do_sat_d1800</code></td>
+        <td>Quality control flag for dissolved oxygen percent saturation at 18.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_w_spd_h150</code></td>
+        <td>Quality control flag for wind speed at 1.5m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_w_dir_h150</code></td>
+        <td>Quality control flag for wind direction at 1.5m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>qc_flag_f_chl_d100</code></td>
+        <td>Quality control flag for chlorophyll fluorescence at 1.0m</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>date</code></td>
+        <td>Date of calibration</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>variable</code></td>
+        <td>Variable abbreviation</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>temperature</code></td>
+        <td>Temperature at calibration</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td>Type of calibration</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>comment</code></td>
+        <td>Comment</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>date</code></td>
+        <td>Date of reference measurement</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>reference_type</code></td>
+        <td>Type of reference (e.g. buffer, saturated water)</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>value_actual</code></td>
+        <td>Value of the reference</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>units_value</code></td>
+        <td>Units of the value</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>value_measured</code></td>
+        <td>Measured value by the sensor</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>units_sensor</code></td>
+        <td>Units of the sensor</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>temperature</code></td>
+        <td>Temperature of the reference type at measurement</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>date</code></td>
+        <td>Date</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>offset</code></td>
+        <td>Offset applied to sensor measurement</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>multiplier</code></td>
+        <td>Multiplier applied to sensor measurement</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>range</code></td>
+        <td>Range of measurements</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>log_multiplier</code></td>
+        <td>Multiplier applied at the logger</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>source</code></td>
+        <td>Source of information</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>date_from</code></td>
+        <td>Date device is deployed to site</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>date_to</code></td>
+        <td>Date device is retrieved from site</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>site_visit</code></td>
+        <td>Was the site visited, logical value</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>variables</code></td>
+        <td>List of variables or can be all</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>action</code></td>
+        <td>Type of action at site such as deployed, removed, cleaned</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>comments</code></td>
+        <td>Comment</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>location</code></td>
+        <td>Location of site</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td>Type of monitoring site</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>customer</code></td>
+        <td>Customer</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>lon</code></td>
+        <td>Longitude</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>lat</code></td>
+        <td>Latitude</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>elev</code></td>
+        <td>Elevation</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td>Type of variable</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>abbr</code></td>
+        <td>Abbreviation of variable</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>full_text</code></td>
+        <td>Full text variable name</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>parsed</code></td>
+        <td>Variable name to be parsed</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>label</code></td>
+        <td>Label for variable</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Distribution</h2>
+<table>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Format</th>
+      <th>&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>device_position</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>device_variable</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>qc_filters</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>qc_update_table</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>rotoiti_qc</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>sensor_calibrations</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>sensor_reference</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>sensor_scaling</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>site_devices</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>site_events</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>sites</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+    <tr>
+      <td><code>variables</code></td>
+      <td><code>csv</code></td>
+      <td><a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data_qc.zip">Download</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+  crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+  integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+  crossorigin=""></script>
+<script>
+  var mymap = L.map('map').setView([-38.03517, 176.40895], 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+    maxZoom: 18,
+  }).addTo(mymap);
+
+  var polygon = L.polygon([[ -38.01112, 176.4889], [ -38.05922, 176.4889], [ -38.05922, 176.329], [ -38.01112, 176.329]]).addTo(mymap);
+</script>

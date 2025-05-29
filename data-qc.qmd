@@ -1,0 +1,1481 @@
+---
+title: "Rotoiti QC"
+execute:
+  warning: false
+format: 
+  html:
+    number-sections: true
+    number-depth: 2
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+      number_sections: true
+tbl-cap-location: top
+---
+
+```{r}
+#| label: setup
+#| eval: true
+#| echo: false
+#| include: false
+
+unlink("data-raw", force = TRUE, recursive = TRUE)
+
+
+```
+
+
+```{r}
+#| label: load-libraries
+#| include: false
+
+library(dplyr)
+library(data.table)
+library(tidyr)
+library(readr)
+library(lubridate)
+library(ggplot2)
+library(patchwork)
+library(readxl)
+library(scattermore)
+library(sf)
+library(tmap)
+library(DT)
+
+# Set tmap mode and basemap
+tmap_mode("view")
+tmap_options(basemap.server = c("OpenStreetMap", "Esri.WorldImagery"))
+
+# Set timezone to NZST
+withr::local_locale(c("LC_TIME" = "C"))
+withr::local_timezone("Etc/GMT-12")
+
+# Load functions
+source("R/qc_funs.R")
+
+```
+
+### Load data
+
+The raw data was downloaded from the Bay of Plenty hydroTel SFTP server. The 
+data were then collated into a CSV file which can be downloaded from 
+[GitHub](https://github.com/limnotrack/f_rotoiti/releases/tag/v0.0.1) or within
+R using the `piggyback` package. The data are stored in the `data-raw` folder.
+
+```{r}
+#| label: load-data
+#| message: true
+#| warning: true
+#| cache: true
+
+download <- TRUE
+
+if (download) {
+  dir.create("data-raw", showWarnings = FALSE)
+  # Hydrotel data
+  piggyback::pb_download(
+    file = "rotoiti_data_raw.zip",
+    dest = ".",
+    repo = "limnotrack/f_rotoiti",
+    tag = "v0.0.1", overwrite = TRUE
+  )
+  
+  # Unzip the file to tempdir
+  tmp_dir <- tempdir()
+  unzip("rotoiti_data_raw.zip", exdir = tmp_dir)
+  
+  # Move files into data-raw
+  file.copy(list.files(file.path(tmp_dir, "rotoiti_data_raw"), full.names = TRUE),
+            "data-raw", overwrite = TRUE)
+  
+  # Delete zip file
+  unlink("rotoiti_data_raw.zip", force = TRUE)
+}
+
+# Read in raw data
+dat <- read_csv("data-raw/rotoiti_sftp_compiled_raw.csv") |> 
+  mutate(datetime = as_datetime(Date)) |> 
+  select(-Date) |> 
+  arrange(datetime)
+
+
+```
+
+### Load metadata
+
+Load metadata about the site, site events, devices, and variables. This includes
+the site location, device IDs, variable names, and sensor calibration data.
+
+```{r}
+#| label: load-metadata
+#| include: true
+#| echo: true
+#| cache: true
+
+site_sel <- "f_Rotoiti"
+site <- read_csv("data-raw/sites.csv", col_types = cols())
+site_events <- read_csv("data-raw/site_events.csv", col_types = cols())
+site_devices <- read_csv("data-raw/site_devices.csv", col_types = cols())
+
+device_var <- read_csv("data-raw/device_variable.csv", col_types = cols())
+
+device_position <- read_csv("data-raw/device_position.csv", col_types = cols())
+
+sensor_reference <- read_csv("data-raw/sensor_reference.csv", col_types = cols())
+
+sensor_calibrations <- read_csv("data-raw/sensor_calibrations.csv", col_types = cols())
+sensor_scaling <- read_csv("data-raw/sensor_scaling.csv", col_types = cols())
+
+variable_ref <- read_csv("data-raw/variables.csv", col_types = cols())
+
+qc_filters <- read_csv("data-raw/qc_filters.csv", col_types = cols())
+
+qc_update_df <- read_csv("data-raw/qc_update_table.csv", col_types = cols())
+# qc_update_df <- read_csv("qc_update_df.csv", col_types = cols())
+
+# sensor_map <- map_sensors(site_devices = site_devices,
+#                           device_var = device_var,
+#                           device_position = device_position)
+# sensor_map
+
+```
+
+```{r}
+#| label: fig-sensor-timeline
+#| fig.cap: Sensor timeline.
+#| echo: false
+
+# plot_sensor_timeline(sensor_map = sensor_map, variable_ref = variable_ref,
+#                      site_events = site_events, add_faults = TRUE)
+
+```
+
+```{r}
+#| label: fig-site-events-timeline
+#| fig.cap: Sensor timeline.
+#| echo: false
+#| fig.width: 8
+#| fig.height: 10
+
+# plot_site_events(site_events = site_events)
+
+```
+
+```{r}
+#| label: delete-raw-data
+#| include: false
+#| echo: false
+
+# Delete raw data
+unlink("data-raw/rotoiti_sftp_compiled_raw.csv", force = TRUE)
+```
+
+
+# Site location
+
+Lake Rotoiti is located in the Bay of Plenty region of New Zealand. The 
+monitoring site is located near the centre of the lake around its deepest point.
+
+
+```{r}
+#| label: fig-site-location
+#| fig.cap: Site location on Lake Rotoiti.
+#| echo: false
+
+site_sf <- site |> 
+  st_as_sf(coords = c("lon", "lat"), crs = 4326)
+
+tm_shape(site_sf, name = "Site location") +
+  tm_dots(size = 1, shape = 21, fill = "red") +
+  tm_view(set_view = 12)
+
+```
+
+
+# Compile raw hydroTel data from BoP
+
+Check no variables are time-aggregated
+
+## Standardise to 15-minute data (i.e. modify any periods where data were logged every 5-minutes.
+
+-   Circular average for wind direction, sum for rainfall, mean for everything else.
+
+```{r}
+#| label: standardise-15min
+#| cache: true
+
+wind_dir <- dat |> 
+  select(datetime, contains("dir")) |>
+  standardise(15, FUN = avg_circ)
+
+mean_vars <- c("datetime", 
+               "do_conc_1m", "do_conc_18m",
+               "do_sat_1m", "do_sat_18m",
+               "ph_decommissioned", "ph_raw",
+               "temp_0m", "temp_2m", "temp_4m", "temp_6m", "temp_9m",
+               "chlorophyll_1m", 
+               "wind_speed_m-s", "wind_speed")
+
+means <- dat |>
+  select(contains(mean_vars)) |>
+  standardise(15, FUN = mean, na.rm = TRUE)
+
+date_df <- data.frame(datetime = seq.POSIXt(round_date(min(dat$datetime), "15 mins"),
+                                            round_date(max(dat$datetime), "15 mins"),
+                                            by = 15*60))
+
+dat2 <- list(date_df, means, wind_dir) |> 
+  # left_join(means, by = "datetime") |>
+  purrr::reduce(function(x, y) {left_join(x, y, by = "datetime")}) |>
+  arrange(datetime)
+
+```
+
+```{r}
+#| label: check-15min
+#| include: false
+#| echo: false
+#| eval: false
+
+# Check that datetime is on a 15 minute interval
+chk <- dat2 |> 
+  mutate(time_diff = c(900, diff(as.numeric(datetime)))) |> 
+  filter(time_diff != 900)
+
+ggplot() +
+  geom_scattermore(data = chk, aes(x = datetime, y = time_diff)) +
+  theme_bw()
+
+
+```
+
+## Map column names
+
+Map column names to standard names used in the database. 
+
+```{r}
+#| label: column-mapping-standard-names
+
+col_mapping <- c(
+  "f_chl_d100" = "chlorophyll_1m",
+  "c_do_d100" = "do_conc_1m",
+  "c_do_d1800" = "do_conc_18m",
+  "c_do_sat_d100" = "do_sat_1m",
+  "c_do_sat_d1800" = "do_sat_18m",
+  "t_wtr_d50" = "temp_0m",
+  "t_wtr_d200" = "temp_2m",
+  "t_wtr_d400" = "temp_4m",
+  "t_wtr_d600" = "temp_6m",
+  "t_wtr_d900" = "temp_9m",
+  "t_wtr_d1200" = "temp_12m",
+  "t_wtr_d1500" = "temp_15m",
+  "t_wtr_d1800" = "temp_18m",
+  "t_wtr_d1810" = "do_temp_18m",
+  "t_wtr_d2100" = "temp_21m",
+  "w_spd_h150" = "wind_speed_m-s",
+  "w_dir_h150" = "dir")
+
+
+dat3 <- standardise_columns(dat2, col_mapping) |> 
+  select(-wind_speed)
+
+
+```
+
+Write level one raw data to file.
+
+```{r}
+#| label: write-level1-raw-data
+#| eval: false
+
+write_csv(dat3, "data-raw/rotoiti_sftp_compiled_raw_level1.csv")
+```
+
+```{r}
+#| label: shiny-explore-raw-data
+#| eval: false
+#| include: false
+#| echo: false
+
+viz_data(data = dat3, long = FALSE, site_events = site_events)
+
+```
+
+
+
+# Sensor Attribution
+
+Map each sensor onto each data point.
+
+```{r}
+#| label: load-raw-level0p5
+#| include: false
+#| echo: false
+#| eval: false
+
+raw <- read_csv("data-raw/rotoiti_sftp_compiled_raw_level1.csv",
+                col_types = cols())
+
+```
+
+```{r}
+#| label: assign-raw-data
+#| include: false
+#| echo: false
+
+raw <- dat3
+
+```
+
+```{r}
+#| label: check-sensor-mapping
+#| include: false
+#| echo: false
+
+# sensor_map[!sensor_map$var_ref_id %in% names(raw), ]
+# 
+# names(raw)[!names(raw) %in% sensor_map$var_ref_id]
+```
+
+
+Convert wide dataframe to standardised long format.
+
+```{r}
+#| label: pivot-wide-to-long-devices
+
+raw_long <- raw |> 
+  pivot_longer(cols = -datetime, names_to = "var_ref_id", values_to = "raw_value") 
+
+vars_abbr <- raw_long |> 
+  select(var_ref_id) |> 
+  distinct() |> 
+  arrange(var_ref_id) |> 
+  # rowwise() |> 
+  mutate(var_abbr = decode_var_ref(var_ref = var_ref_id)$var_abbr) 
+
+# Conditional join raw_long with sensor_map using var_ref_id and when datetime is between date_from and date_to
+# raw_long_device <- sensor_map |> 
+#   # slice(1:3) |>
+#   group_by(device_id) |> 
+#   left_join(raw_long, by = "var_ref_id") |>
+#   filter(datetime >= date_from & datetime <= date_to) |> 
+#   ungroup() |> 
+#   arrange(device_id, datetime) |>
+raw_long_device <- raw_long |> 
+  mutate(
+    site = "f_Rotoiti",
+    device_id = case_when(
+      var_ref_id %in% c("t_wtr_d1810", "c_do_d1800", "c_do_sat_d1800") ~ "AA_device_c_do_d1800",
+      var_ref_id %in% c("c_do_d100", "c_do_sat_d100") ~ "AA_device_c_do_d100",
+      grepl("t_wtr", var_ref_id) ~ "AA_device_t_wtr_string",
+      .default = paste0("AA_device_", var_ref_id)
+    )
+  ) |>
+  left_join(vars_abbr, by = "var_ref_id") |>
+  mutate(qc_value = round(raw_value, 2),
+         qc_flag = "", 
+         qc_code = case_when(
+           is.na(raw_value) ~ "QC 100",
+           TRUE ~ "QC 200"
+         )) |> 
+  select(site, datetime, device_id, var_abbr, var_ref_id, raw_value, qc_value, 
+         qc_flag, qc_code) |> 
+  distinct(datetime, var_ref_id, .keep_all = TRUE) 
+
+site_meta <- extract_device_metadata(raw_long_device)
+
+site_devices <- site_meta$site_devices
+device_position <- site_meta$device_position
+device_var <- site_meta$device_var
+
+sensor_map <- map_sensors(site_devices = site_devices,
+                          device_var = device_var,
+                          device_position = device_position)
+
+head(raw_long_device)
+
+```
+
+
+```{r}
+#| label: shiny-explore-long-data
+#| eval: false
+#| include: false
+#| echo: false
+
+viz_data(data = raw_long_device, site_events = site_events)
+
+```
+
+### Sensor plots
+
+::: {.panel-tabset}
+```{r}
+#| label: sensor-plots
+#| results: asis
+#| fig-width: 14
+#| fig-height: 6
+
+
+sel_vars <- raw_long_device |> 
+  select(var_ref_id) |>
+  distinct() |> 
+  mutate(z_reference = decode_var_ref(var_ref = var_ref_id)) |>
+  unpack(z_reference) |>
+  arrange(var_abbr, z_relative) |>
+  pull(var_ref_id)
+v <- sel_vars[9]
+
+for (v in sel_vars) {
+  
+  var_name <- decode_var_ref(var_ref = v, variable_ref = variable_ref)
+  
+  cat('## ', paste(var_name$var_abbr, var_name$z_relative, "m"), '\n\n')
+  
+  p <- plot_sensor(data = raw_long_device, var_ref_id = v,
+                   variable_ref =  variable_ref, 
+                   sensor_calibrations = sensor_calibrations, 
+                   sensor_reference = sensor_reference,
+                   sensor_scaling = sensor_scaling) +
+    theme_bw(base_size = 16) +
+    theme(legend.position = "bottom")
+  print(p)
+  
+  cat('\n\n')
+  
+}
+
+```
+:::
+
+## Remove based on site events
+
+```{r}
+#| label: buoy-out-of-water
+#| fig.cap: Check when the buoy was out of the water.
+#| fig.width: 8
+#| fig.height: 10
+
+# raw_long_device <- raw_long_device |> 
+#   remove_site_events(site_events = site_events, sensor_map = sensor_map) 
+# 
+# raw_long_device |> 
+#   filter(qc_flag == "sensor_fault") 
+
+# plot_qc_data(data = raw_long_device_filt)
+
+```
+
+
+# Quality control
+
+We used a set of quality control codes to assess the quality of the data. The
+codes are from the [National Environmental Monitoring Standards (NEMS)](https://www.nems.org.nz/). The codes are 
+as follows:
+
+```{r}
+#| label: qc-codes
+
+qc_codes <- c("Missing Record" = "QC 100",
+              "No Quality or Non Verified" = "QC 200",
+              "Synthetic" = "QC 300",
+              "Poor Quality" = "QC 400",
+              "Fair Quality" = "QC 500",
+              "Good Quality" = "QC 600")
+
+qc_code_col_scale = c(
+  "QC 100" = "#FF0000",
+  "QC 200" = "#8B5A00",
+  "QC 300" = "#D3D3D3",
+  "QC 400" = "#FFA500",
+  "QC 500" = "#00BFFF",
+  "QC 600" = "#006400"
+)
+
+qc_df <- data.frame(
+  qc_code = qc_codes,
+  qc_zone = names(qc_codes),
+  qc_code_col = unname(qc_code_col_scale),
+  stringsAsFactors = FALSE
+)
+
+qc_df |> 
+  datatable(rownames = FALSE,
+            options = list(
+              pageLength = 6,
+              dom = "t",
+              columnDefs = list(list(className = 'dt-center', targets = "_all"))
+            )
+  ) |> 
+  formatStyle(
+    'qc_code_col',
+    target = 'row',
+    backgroundColor = styleEqual(qc_code_col_scale, qc_code_col_scale)
+  )
+
+```
+
+
+```{r}
+#| label: replace-ph-values
+#| fig.cap: Replace pH values with drift corrected values.
+#| include: false
+#| echo: false
+
+raw_long_device2 <- raw_long_device
+
+
+```
+
+## Basic QC - filters
+
+a.	Filter extreme outliers (order of magnitude plus)
+b.	Filter repetitions/stuck values (careful genuine repeats e.g., rainfall == 0)
+c.	Remove data for any periods where buoy was clearly out of the water (see notes or visual check of data)
+
+
+```{r}
+#| label: basic-qc-filter-extreme
+
+raw_long_device_filt <- apply_filters(raw_long_device2, filters = qc_filters)
+
+```
+
+
+```{r}
+#| label: fig-plot-raw-long-device-filt
+#| fig.cap: Plot raw data with basic QC filters applied.
+
+plot_flag_ts(raw_long_device_filt)
+```
+```{r}
+#| label: check-for-duplicates
+#| include: false
+#| echo: false
+#| eval: false
+
+# dups <- raw_long_device_filt |> 
+#   group_by(var_ref_id, datetime) |> 
+#   summarise(n = n()) |> 
+#   filter(n > 1)
+# dups 
+```
+
+
+# Fluorescence sensors
+
+```{r}
+#| label: fig-fluorescence-sensors
+#| fig.cap: Fluorescence sensors an their associated device ids.
+
+fluor_df <- raw_long_device_filt |> 
+  filter(var_abbr %in% c("f_chl")) #|>   
+  # apply_adjustment("f_chl_d100",
+  #                  date_range = c("2008-11-15 23:23:03", "2009-01-29 12:59:29"),
+  #                  FUN = \(x) x / 5) |>
+  # apply_adjustment("f_chl_d100",
+  #                  date_range = c("2009-01-29 13:00:00", "2011-04-20 17:30:00"),
+  #                  FUN = \(x) x / 10) |>
+  # apply_adjustment("f_chl_d100",
+  #                  date_range = c("2011-04-20 17:30:34", "2012-10-11 21:18:38"),
+  #                  FUN = \(x) x / 100) |>
+  # apply_adjustment("f_chl_d100",
+  #                  date_range = c("2012-10-11 21:19:38", "2021-02-19 03:55:08"),
+  #                  FUN = \(x) x / 10) |>
+  # apply_adjustment("f_chl_d100",
+  #                  FUN = \(x) ifelse(x >= 5, NA, x))# |>
+  # viz_data()
+
+
+# fluor_sensors <- sensor_map |> 
+#   filter(device_id %in% fluor_df$device_id) |> 
+#   select(device_id, var_ref_id, date_from, date_to)
+# 
+# sensor_refs <- sensor_reference |> 
+#   left_join(fluor_sensors, by = "device_id") |>
+#   filter(device_id %in% fluor_sensors$device_id,
+#          !is.na(value_actual)
+#          # date > "2013-06-28",
+#          # value_actual %in% c(4, 7, 10), 
+#          # units_sensor == "counts"
+#   ) 
+# 
+# sensor_scales <- sensor_scaling |> 
+#   arrange(date) |>
+#   filter(device_id %in% fluor_sensors$device_id) 
+
+plot_sensor(data = fluor_df, var_ref_id = c("f_chl_d100"),#, "f_phyc_d100"),
+            variable_ref =  variable_ref, 
+            sensor_calibrations = sensor_calibrations, 
+            sensor_reference = sensor_reference,
+            sensor_scaling = sensor_scaling, clip_ylim = F) 
+
+```
+
+Correct fluorescence data by removing bad data and applying corrections to get 
+the chlorophyll at it its raw 0-5V raw signal, then recorrecting to get the
+corrected chlorophyll value inrelative fluorescene units (RFU).
+
+```{r}
+#| label: adjust-chlorophyll-data
+
+raw_chl <- fluor_df |> 
+  filter(var_ref_id == "f_chl_d100")
+
+# viz_data(data = raw_chl, site_events = site_events, variable = "var_ref_id", 
+#          value = "qc_value")
+
+# sensor_scales <- sensor_scaling |> 
+#   filter(device_id %in% raw_chl$device_id) |> 
+#   select(device_id, date, offset, multiplier, range) 
+
+raw_v <- raw_chl |> 
+  mutate(var_ref_id = "f_chl_raw_v_d100",
+         var_abbr = "f_chl_raw_v",
+         # raw_value = NA_real_
+  ) |>
+  apply_adjustment("f_chl_raw_v_d100",
+                   date_range = c("2008-11-15 23:23:03", "2009-01-29 12:59:29"),
+                   FUN = \(x) x / 5) |>
+  apply_adjustment("f_chl_raw_v_d100",
+                   date_range = c("2009-05-05 12:31:33", "2009-12-16 04:43:55"),
+                   FUN = \(x) x / 3) |>
+  apply_adjustment("f_chl_raw_v_d100",
+                   date_range = c("2009-01-29 13:00:00", "2011-04-20 17:30:00"),
+                   FUN = \(x) x / 10) |>
+  apply_adjustment("f_chl_raw_v_d100",
+                   date_range = c("2011-04-20 17:30:34", "2012-10-11 21:18:38"),
+                   FUN = \(x) x / 100) |>
+  apply_adjustment("f_chl_raw_v_d100",
+                   date_range = c("2012-10-11 21:19:38", "2021-02-19 03:55:08"),
+                   FUN = \(x) x / 10) |>
+  apply_adjustment("f_chl_raw_v_d100",
+                   FUN = \(x) ifelse(x >= 5, NA, x)) |>
+  update_qc_code_vectorized(qc_update_df = qc_update_df)
+
+```
+
+```{r}
+#| label: shiny-explore-chlorophyll-data
+#| eval: false
+#| include: false
+
+qc_update_df <- viz_data(data = raw_v, qc_update_df = qc_update_df)
+write_csv(qc_update_df, "qc_update_df.csv")
+
+```
+
+```{r}
+#| label: plot-raw-chlorophyll-data
+#| include: false
+#| echo: false
+plot_raw_qc(data = raw_v, variable_ref = variable_ref, ylim = c(0, 5))
+```
+
+
+```{r}
+#| label: fig-fluorescence-sensors-chla-corr-1
+#| fig.cap: Corrected chlorophyll data. Points are coloured according to the quality control codes.
+
+chla_corr <- raw_v |>
+  # update_qc_code_vectorized(qc_update_df = qc_update_df) |>
+  mutate(qc_value = qc_value * 10,
+         var_ref_id = "f_chl_d100",
+         var_abbr = "f_chl",
+  )
+
+
+chla_corr |> 
+  plot_sensor(var_ref_id = "f_chl_d100", variable_ref =  variable_ref, 
+              sensor_calibrations = sensor_calibrations, 
+              sensor_reference = sensor_reference,
+              sensor_scaling = sensor_scaling, clip_ylim = FALSE,
+              colour = "qc_code")
+```
+
+```{r}
+#| label: plot-raw-chlorophyll-data-2
+#| include: false
+#| echo: false
+plot_raw_qc(data = chla_corr, variable_ref = variable_ref, ylim = c(0, 50))
+```
+
+
+
+## Load in field measurements
+
+Compare field measurements to sensor data. 
+
+```{r}
+#| label: fig-compare-field-measurements
+#| fig.cap: Compare field measurements to sensor data.
+#| fig.width: 8
+#| fig.height: 6
+
+field <- read_csv("data-raw/rotoiti_field_data.csv") |> 
+  mutate(Date2 = as.Date(Date))
+
+chla <- field |> 
+  filter(grepl("Chla", Parameter)) |> 
+  select(Date2, LocationName, DepthFrom, Sample_Depth, Value) |> 
+  rename(Date = Date2)
+
+ref_times <- raw_long_device_filt |> 
+  mutate(hour = hour(datetime)) |> 
+  filter(var_abbr %in% c("f_chl")) |>
+  filter(hour %in% c(0:6, 21:23)) |> 
+  filter(as.Date(datetime) %in% as.Date(chla$Date))
+
+sub_sensor <- raw_v |> 
+  mutate(Date = as.Date(datetime)) |>
+  filter(datetime %in% ref_times$datetime) |> 
+  group_by(Date, device_id) |>
+  summarise(qc_value = mean(qc_value, na.rm = TRUE),
+            median = median(qc_value, na.rm = TRUE), .groups = "drop")
+
+
+
+df <- sub_sensor |> 
+  left_join(chla, by = c("Date" = "Date")) |> 
+  mutate(year = year(Date)) |> 
+  filter(!is.na(qc_value))
+
+ggplot() +
+  geom_point(data = df, aes(qc_value, Value, colour = LocationName)) +
+  geom_smooth(data = df, aes(qc_value, Value, colour = LocationName), method = "lm") +
+  # facet_wrap(year~device_id, scales = "free") +
+  labs(x = "Sensor value (Volts)",
+       y = "Field value (ug/L)") +
+  coord_cartesian(ylim = c(0, 50)) +
+  theme_bw() +
+  theme(legend.position = "bottom") 
+
+ggplot() +
+  geom_point(data = df, aes(qc_value, Value, colour = device_id)) +
+  geom_smooth(data = df, aes(qc_value, Value, colour = device_id), method = "lm") +
+  facet_wrap(~device_id, scales = "free") +
+  labs(x = "Sensor value (Volts)",
+       y = "Field value (ug/L)") +
+  # coord_cartesian(ylim = c(0, 50)) +
+  theme_bw() +
+  theme(legend.position = "bottom") 
+
+
+
+```
+
+
+```{r}
+#| label: fig-compare-field-measurements-2
+#| fig.cap: Compare field measurements to sensor data.
+#| echo: false
+#| include: false
+
+ggplot() +
+  geom_point(data = df, aes(Date, Value, colour = LocationName)) +
+  geom_point(data = df, aes(Date, qc_value*10)) +
+  facet_wrap(year~device_id, scales = "free") +
+  labs(x = "Sensor value (Volts)",
+       y = "Field value (ug/L)") +
+  coord_cartesian(ylim = c(0, 50)) +
+  theme_bw()
+
+```
+
+
+
+# Oxygen sensors
+
+Remove bad data and correct for linear drift
+
+```{r}
+#| label: filter-oxygen-sensors-1m
+do_1m <- raw_long_device_filt |> 
+  filter(var_ref_id %in% c("c_do_sat_d100"))
+
+```
+
+```{r}
+#| label: shiny-update-qc-code-do-sat-d100
+#| include: false
+#| echo: false
+#| eval: false
+# qc_update_df <- do_1m |> 
+#   viz_data(qc_update_df = qc_update_df, site_events = site_events, 
+#            variable = "var_ref_id", value = "qc_value")
+# 
+# write_csv(qc_update_df, "qc_update_df.csv")
+
+do_1m <- do_1m |> 
+  drift_correction(var_ref_id = "c_do_sat_d100", 
+                   date_range = c("2017-05-13 12:29:20", "2020-11-09 23:18:35"), 
+                   low = c(0, 0, 0), high = c(100, 88, 88)) |> 
+  update_qc_code_vectorized(qc_update_df = qc_update_df)
+```
+
+```{r}
+#| label: plot-raw-oxygen-sensor-data
+plot_raw_qc(data = do_1m, variable_ref = variable_ref, ylim = c(80, 150))
+
+# do_1m |> 
+#   viz_data(qc_update_df = qc_update_df, site_events = site_events,
+#            variable = "var_ref_id", value = "qc_value")
+
+```
+
+```{r}
+#| label: shiny-update-qc-code-do-sat-d100-v2
+#| include: false
+#| echo: false
+#| eval: false
+qc_update_df <- viz_data(data = do_1m, qc_update_df = qc_update_df, 
+                         site_events = site_events, variable = "var_ref_id",
+                         value = "qc_value")
+
+write_csv(qc_update_df, "qc_update_df.csv")
+
+# do_1m <- do_1m |> 
+#   update_qc_code_vectorized(qc_update_df = qc_update_df)
+```
+
+
+```{r}
+#| label: fig-oxygen-1m-qc
+#| fig.cap: Oxygen sensor data quality control.
+
+do_1m |> 
+  # plotly_data(y1 = "c_do_sat_d100", sub = 20)
+  plot_sensor(var_ref_id = c("c_do_sat_d100"), variable_ref =  variable_ref, 
+              sensor_calibrations = sensor_calibrations, 
+              sensor_reference = sensor_reference,
+              sensor_scaling = sensor_scaling, clip_ylim = FALSE,
+              colour = "qc_code") 
+
+```
+
+```{r}
+#| label: subset-oxygen-18m-qc
+do_18m <- raw_long_device_filt |> 
+  filter(var_ref_id %in% c("c_do_sat_d1800")) #|> 
+  # update_qc_code_vectorized(qc_update_df = qc_update_df)
+```
+
+
+```{r}
+#| label: shiny-update-qc-code-do-sat-d1800
+#| include: false
+#| echo: false
+#| eval: false
+qc_update_df <- viz_data(data = do_18m, qc_update_df = qc_update_df, 
+                         site_events = site_events, variable = "var_ref_id",
+                         value = "qc_value")
+
+write_csv(qc_update_df, "qc_update_df.csv")
+```
+
+```{r}
+#| label: filter-oxygen-sensors-18m
+
+do_18m <- do_18m |> 
+  update_qc_code_vectorized(qc_update_df = qc_update_df) 
+
+plot_raw_qc(data = do_18m, variable_ref = variable_ref, ylim = c(0, 120))
+
+```
+
+
+
+```{r}
+#| label: fig-oxygen-18m-qc
+#| fig.cap: Oxygen sensor data at 18m quality control.
+
+do_18m |> 
+  # plotly_data(y1 = "c_do_sat_d1000", sub = 20)
+  plot_sensor(var_ref_id = c("c_do_sat_d1800"), variable_ref =  variable_ref,
+              sensor_calibrations = sensor_calibrations, 
+              sensor_reference = sensor_reference,
+              sensor_scaling = sensor_scaling, clip_ylim = F, colour = "qc_code") +
+  geom_hline(yintercept = 0)
+
+
+```
+
+# Recalculate DO concentrations using temperature and DO saturation
+
+Download the Rotoehu data quality control file from the repository and unzip it.
+We will use the air pressure to calculate the DO saturation concentration.
+
+```{r}
+#| label: dl-rotoehu-data-qc
+#| include: false
+#| echo: false
+#| eval: true
+piggyback::pb_download(
+  file = "rotoehu_data_qc.zip",
+  dest = ".",
+  repo = "limnotrack/f_rotoehu",
+  tag = "v0.0.1"
+)
+
+# Unzip the file
+unzip("rotoehu_data_qc.zip")
+
+site_devices_ehu <- read_csv("rotoehu_data_qc/site_devices.csv", col_types = cols())
+device_var_ehu <- read_csv("rotoehu_data_qc/device_variable.csv", col_types = cols())
+device_position_ehu <- read_csv("rotoehu_data_qc/device_position.csv", 
+                            col_types = cols()) |> 
+  mutate(site = "f_Rotoehu")
+
+data_wide <- read_csv("rotoehu_data_qc/rotoehu_qc.csv", col_types = cols())
+
+data_ehu <- data_wide |> 
+  pivot_longer(
+    cols = matches("^(qc_value|qc_code|qc_flag)_"),
+    names_to = c(".value", "var_ref_id"),
+    names_pattern = "^(qc_value|qc_code|qc_flag)_(.+)$"
+  )
+
+# Map site devices to data
+data_ehu <- data_ehu |> 
+  map_data_to_devices(site_devices = site_devices_ehu,
+                      device_var = device_var_ehu,
+                      device_position = device_position_ehu,
+                      variables = variable_ref
+                      ) 
+head(data_ehu)
+
+```
+
+
+```{r}
+#| label: filter-temperature-1m
+temp_1m <- raw_long_device_filt |> 
+  filter(var_ref_id == "t_wtr_d50") 
+
+```
+
+```{r}
+#| label: shiny-temp-1m-qc
+#| include: false
+#| echo: false
+#| eval: false
+qc_update_df <- viz_data(data = temp_1m, qc_update_df = qc_update_df)
+
+write_csv(qc_update_df, "qc_update_df.csv")
+```
+
+
+```{r}
+#| label: do-concentration-1m-calc
+
+rel_temp <- temp_1m |> 
+  update_qc_code_vectorized(qc_update_df = qc_update_df) |>
+  select(datetime, qc_value) |> 
+  rename(temp = qc_value)
+
+pr_baro <- data_ehu |> 
+  filter(var_ref_id == "pr_baro_h150") |> 
+  select(datetime, qc_value) |> 
+  rename(pr_baro = qc_value)
+
+do_conc2_1m <- left_join(do_1m, rel_temp, by = "datetime") |> 
+  left_join(pr_baro, by = "datetime") |> 
+  mutate(do_sat_mgL = calc_DOsat_mg(temp, pr_baro),
+         var_abbr = "c_do",
+         var_ref_id = "c_do2_d100",
+         qc_value = qc_value / 100 * do_sat_mgL
+  ) |> 
+  select(datetime, var_ref_id, site, device_id, var_abbr, qc_value, qc_flag, 
+         do_sat_mgL, temp)
+
+do_conc_1m <- raw_long_device_filt |> 
+  filter(var_ref_id == "c_do_d100") |> 
+  select(datetime, var_ref_id, site, device_id, var_abbr, raw_value)
+
+
+do_conc2_1m <- do_conc2_1m |> 
+  mutate(var_ref_id = "c_do_d100") |> 
+  select(datetime, var_ref_id, site, device_id, var_abbr, qc_value,
+         qc_flag)
+
+do_conc3_1m <- left_join(do_conc_1m, do_conc2_1m,
+                         by = c("datetime", "var_ref_id", "site", "device_id", 
+                                "var_abbr")) |> 
+  mutate(
+    qc_code = case_when(
+      !is.na(qc_value) ~ "QC 300",
+      is.na(raw_value) ~ "QC 100",
+      is.na(qc_value) ~ "QC 200"
+    )
+  )
+
+```
+
+```{r}
+#| label: shiny-update-qc-code-do-d100-2
+#| include: false
+#| echo: false
+#| eval: false
+
+qc_update_df <- viz_data(data = do_conc3_1m, qc_update_df = qc_update_df, 
+                         site_events = site_events, variable = "var_ref_id",
+                         value = "qc_value")
+
+write_csv(qc_update_df, "data-raw/qc_update_df.csv", append = TRUE)
+
+```
+
+
+```{r}
+#| label: filter-temperature-18m
+temp_18m <- raw_long_device_filt |> 
+  filter(var_ref_id == "t_wtr_d1810")
+
+```
+
+
+```{r}
+#| label: shiny-update-qc-code-temp-18m
+#| include: false
+#| echo: false
+#| eval: false
+
+qc_update_df <- viz_data(data = temp_18m, qc_update_df = qc_update_df)
+
+write_csv(qc_update_df, "qc_update_df.csv")
+
+```
+
+
+```{r}
+#| label: do-concentration-18m-calc
+
+temp_18m <- temp_18m |> 
+  update_qc_code_vectorized(qc_update_df = qc_update_df) 
+
+temp_18m <- temp_18m |> 
+  select(datetime, qc_value) |> 
+  rename(temp = qc_value)
+
+do_conc2_18m <- left_join(do_18m, temp_18m, by = "datetime") |> 
+  left_join(pr_baro, by = "datetime") |> 
+  mutate(do_sat_mgL = calc_DOsat_mg(temp, pr_baro),
+         var_abbr = "c_do",
+         var_ref_id = "c_do2_d100",
+         qc_value = qc_value / 100 * do_sat_mgL
+  ) |> 
+  select(datetime, var_ref_id, site, device_id, var_abbr, qc_value, qc_flag, do_sat_mgL, temp)
+
+do_conc_18m <- raw_long_device_filt |> 
+  filter(var_ref_id == "c_do_d1800") |> 
+  select(datetime, var_ref_id, site, device_id, var_abbr, raw_value)
+
+
+do_conc2_18m <- do_conc2_18m |> 
+  mutate(var_ref_id = "c_do_d1800") |> 
+  select(datetime, var_ref_id, site, device_id, var_abbr, qc_value,
+         qc_flag)
+
+do_conc3_18m <- left_join(do_conc_18m, do_conc2_18m, by = c("datetime", "var_ref_id", "site", "device_id", "var_abbr")) |> 
+  mutate(
+    qc_code = case_when(
+      !is.na(qc_value) ~ "QC 300",
+      is.na(raw_value) ~ "QC 100",
+      is.na(qc_value) ~ "QC 200"
+    )
+  )
+
+```
+
+```{r}
+#| label: plot-raw-do-conc-18m
+plot_raw_qc(data = do_conc3_18m, variable_ref = variable_ref, ylim = c(0, 12))
+```
+
+
+```{r}
+#| label: shiny-update-qc-code-do-conc-d1800
+#| include: false
+#| echo: false
+#| eval: false
+
+qc_update_df <- viz_data(data = do_conc3_18m, qc_update_df = qc_update_df, 
+                         site_events = site_events, variable = "var_ref_id",
+                         value = "qc_value")
+
+write_csv(qc_update_df, "qc_update_df.csv")
+
+
+```
+
+```{r}
+#| label: bind all-do-data
+
+do <- bind_rows(do_conc3_1m, do_conc3_18m, do_1m, do_18m) 
+# qc_update_df <- viz_data(data = do, qc_update_df = qc_update_df, 
+#                           site_events = site_events, variable = "var_ref_id",
+#                           value = "qc_value")
+```
+
+
+
+## Water temperature
+
+```{r}
+#| label: filter-water-temperature
+wtemp <- raw_long_device_filt |> 
+  filter(var_abbr %in% c("t_wtr")) |>
+  update_qc_code_vectorized(qc_update_df = qc_update_df)
+```
+
+```{r}
+#| label: shiny-update-qc-code-t-wtr
+#| include: false
+#| echo: false
+#| eval: false
+qc_update_df <- viz_data(data = wtemp, qc_update_df = qc_update_df, 
+                         site_events = site_events, variable = "var_ref_id",
+                         value = "qc_value")
+
+write_csv(qc_update_df, "qc_update_df.csv")
+```
+
+
+```{r}
+#| label: plot-water-temperature-raw
+plot_raw_qc(data = wtemp, variable_ref = variable_ref, ylim = c(7, 30))
+```
+
+
+## Check for offsets between temperature nodes
+
+Generally the temperature data falls within the expected range, but there are some offsets between the sensors. The following plot shows the estimated temperatures for 10 and 25 degrees C, 
+using calculated offsets based on when the temperature difference between the 
+sensors are in 5% of the distribution.
+
+The temperature from the DO sensors (1m and 10m) have a lower accuracy (0.5 C).
+
+```{r}
+#| label: check-offsets
+
+temp_strings <- wtemp |>
+  # Filter out oxygen depths
+  filter(!var_ref_id %in% c("t_wtr_d1810")) |> 
+  pull(device_id) |> 
+  unique()
+
+
+temp_devices <- site_devices |> 
+  filter(device_id %in% temp_strings)
+
+```
+
+```{r}
+#| label: fig-check-offsets-1
+#| echo: false
+#| fig-cap: "Check for offsets between temperature nodes"
+#| fig-width: 6
+#| fig-height: 8
+
+temp_drift <- wtemp |>
+  # Filter out oxygen depths
+  filter(!var_ref_id %in% c("t_wtr_d1810")) |> 
+  calc_temp_drift(pctile_tdiff = 0.05,
+                  date_range = c(temp_devices$date_from[1], "2021-12-31"))
+
+temp_drift |> 
+  filter(!year %in% c(2008, 2013, 2021)) |> 
+  plot_temp_drift()
+```
+
+
+# Assign QC codes for met variables
+
+```{r}
+#| label: met-assign-qc-codes
+
+met <- raw_long_device_filt |> 
+  filter(var_abbr %in% c("w_dir", "w_spd"))
+
+```
+
+```{r}
+#| label: shiny-update-qc-code-met
+#| include: false
+#| echo: false
+#| eval: false
+qc_update_df <- viz_data(data = met, qc_update_df = qc_update_df, 
+                         site_events = site_events, variable = "var_ref_id",
+                         value = "qc_value")
+
+write_csv(qc_update_df, "qc_update_df.csv", append = TRUE)
+```
+
+```{r}
+#| label: fig-met-qc
+#| fig.cap: Temperature sensor data at 20.5m quality control.
+#| fig.width: 8
+#| fig.height: 8
+
+met <- met |>
+  update_qc_code_vectorized(qc_update_df = qc_update_df, 
+                            var_ref_id = c("w_dir_h150", "w_spd_h150"))
+
+met |> 
+  plot_sensor(var_ref_id = c("w_dir_h150", "w_spd_h150"), 
+              variable_ref = variable_ref,
+              sensor_calibrations = sensor_calibrations, 
+              sensor_reference = sensor_reference,
+              sensor_scaling = sensor_scaling, clip_ylim = FALSE, colour = "qc_code")
+
+```
+
+
+```{r}
+#| label: plot-raw-met-qc
+plot_raw_qc(data = met, variable_ref = variable_ref)
+```
+
+
+```{r}
+#| label: review-data
+#| include: false
+#| echo: false
+
+data <- bind_rows(wtemp, do, met, chla_corr) |>
+  mutate(
+    qc_code = case_when(
+      is.na(raw_value) ~ "QC 100",
+      is.na(qc_value) ~ "QC 200",
+      .default = qc_code
+    )
+  )
+
+# data_qc_wide <- data |> 
+#   select(-device_id, -var_abbr) |> 
+#   pivot_wider(
+#     names_from = var_ref_id,
+#     values_from = c(qc_value, qc_code, qc_flag, raw_value),
+#     names_sep = "_"
+#   ) 
+# 
+# data_long <- data_qc_wide |> 
+#   pivot_longer(
+#     cols = matches("^(qc_value|qc_code|qc_flag|raw_value)_"),
+#     names_to = c(".value", "var_ref_id"),
+#     names_pattern = "^(qc_value|qc_code|qc_flag|raw_value)_(.+)$"
+#   )
+
+dir.create("rotoiti_data", showWarnings = FALSE)
+write_csv(data, "rotoiti_data/rotoiti_qc.csv")
+
+```
+
+
+# Visual summaries
+
+```{r}
+#| label: load-data-restart
+#| echo: false
+#| include: false
+#| eval: false
+
+# Load the data
+data_wide <- read_csv("rotoiti_data/rotoiti_qc.csv", col_types = cols())
+
+
+data <- data_wide |> 
+  pivot_longer(
+    cols = matches("^(qc_value|qc_code|qc_flag)_"),
+    names_to = c(".value", "var_ref_id"),
+    names_pattern = "^(qc_value|qc_code|qc_flag)_(.+)$"
+  ) |> 
+  # Map site devices to data
+  map_data_to_devices(site_devices = site_devices,
+                      device_var = device_var,
+                      device_position = device_position,
+                      variables = variable_ref
+  ) 
+
+
+```
+
+
+Plot each variable
+
+## Temperature
+
+```{r}
+#| label: fig-temp-qc
+#| fig.cap: "Temperature data at various depths quality control."
+#| warning: false
+#| message: false
+#| eval: true
+#| fig.height: 10
+
+plot_var_ts_qc(data = data, var_ref_id = c("t_wtr_d50", "t_wtr_d200",
+                                           "t_wtr_d400", "t_wtr_d600",
+                                           "t_wtr_d900", "t_wtr_d1200",
+                                           "t_wtr_d1500", "t_wtr_d1800", 
+                                           "t_wtr_d1810", "t_wtr_d2100"))
+
+```
+
+## Oxygen
+
+```{r}
+#| label: fig-oxygen-sat-doy-qc
+#| fig.cap: "Oxygen saturation data at 1 and 10m depths quality control."
+
+plot_var_ts_qc(data = data, var_ref_id = c("c_do_sat_d100", "c_do_sat_d1800"))
+
+```
+
+
+```{r}
+#| label: fig-oxygen-doy-qc
+#| fig.cap: "Oxygen data at 1 and 10m depths quality control."
+
+plot_var_ts_qc(data = data, var_ref_id = c("c_do_d100", "c_do_d1800"))
+
+```
+
+## Chlorophyll
+
+```{r}
+#| label: fig-chla1-doy-qc
+#| fig.cap: "Chlorophyll data at 1.0m quality control."
+
+plot_var_ts_qc(data = data, var_ref_id = c("f_chl_d100"))
+
+```
+
+
+## Meteorological variables
+
+::: {.panel-tabset}
+
+```{r}
+#| label: met-qc-plots
+#| results: asis
+#| fig-width: 14
+#| fig-height: 6
+#| warning: false
+
+
+sel_vars <- c("w_dir_h150", "w_spd_h150")
+
+for (v in sel_vars) {
+  
+  var_name <- decode_var_ref(var_ref = v, variable_ref = variable_ref)
+  
+  cat("## ", paste(var_name$var_abbr, var_name$value_m, "m"), "\n\n")
+  
+  p <- plot_var_ts_qc(data = data, var_ref_id = v)
+  
+  print(p)
+  
+  cat("\n\n")
+}
+
+```
+
+:::
+
+```{r}
+#| label: write-update-qc-df
+#| echo: false
+#| include: false
+#| eval: false 
+
+# write_csv(qc_update_df, "qc_update_table.csv")
+
+```
+
+
+
+# Download data
+
+Download the data as a zip folder. The data is in wide format an comes with
+metadata files. The metadata files contain the information needed to reconstruct
+the quality control.
+
+```{r}
+#| label: write-data-to-zip-folder
+#| echo: false
+#| include: false
+#| eval: true
+
+# Create directory for rotoiti data
+path <- "rotoiti_data_qc"
+unlink(path, recursive = TRUE)
+unlink(paste0(path, ".zip"))
+
+
+# Write data and metadata to this directory
+dir.create(path, showWarnings = FALSE)
+
+data_qc_wide <- data |> 
+  select(-device_id, -var_abbr, -raw_value) |> 
+  pivot_wider(
+    names_from = var_ref_id,
+    values_from = c(qc_value, qc_code, qc_flag),
+    names_sep = "_"
+  ) 
+
+
+# Reconvert back to long
+data_qc_long <- data_qc_wide |> 
+  pivot_longer(
+    cols = matches("^(qc_value|qc_code|qc_flag)_"),
+    names_to = c(".value", "var_ref_id"),
+    names_pattern = "^(qc_value|qc_code|qc_flag)_(.+)$"
+  )
+
+write_csv(site, file = file.path(path, "sites.csv"), na = "")
+write_csv(data_qc_wide, file = file.path(path, "rotoiti_qc.csv"), na = "")
+write_csv(site_events, file = file.path(path, "site_events.csv"), na = "")
+write_csv(site_devices, file = file.path(path, "site_devices.csv"), na = "")
+write_csv(device_var, file = file.path(path, "device_variable.csv"), na = "")
+write_csv(device_position, file = file.path(path, "device_position.csv"),
+          na = "")
+write_csv(sensor_reference, file = file.path(path, "sensor_reference.csv"), 
+          na = "")
+write_csv(sensor_calibrations, file = file.path(path, 
+                                                "sensor_calibrations.csv"), 
+          na = "")
+write_csv(sensor_scaling, file = file.path(path, "sensor_scaling.csv"), na = "")
+write_csv(variable_ref, file = file.path(path, "variables.csv"), na = "")
+write_csv(qc_filters, file = file.path(path, "qc_filters.csv"), na = "")
+# Write the QC update table
+write_csv(qc_update_df, file = file.path(path, "qc_update_table.csv"), na = "")
+
+dataspice::write_spice()
+
+generate_readme(files_path = path, output_path = path)
+
+
+# zip the folder into a zip folder
+zip(zipfile = "rotoiti_data_qc.zip", files = path)
+
+```
+
+```{r}
+#| label: upload-data-github
+#| include: false
+#| echo: false
+#| eval: true
+
+piggyback::pb_upload(
+  "rotoiti_data_qc.zip",
+  repo = "limnotrack/f_rotoiti",
+  tag = "v0.0.1", 
+  overwrite = TRUE, 
+  .token = Sys.getenv("GH_PAT")
+)
+```
+
+
+<a href="https://github.com/limnotrack/f_rotoiti/releases/download/v0.0.1/rotoiti_data.zip" download class="btn btn-primary">Download Data</a>
+

@@ -1,0 +1,43 @@
+project:
+  type: website
+
+website:
+  title: "Lake Rotoiti Data Product"
+  favicon: assets/favicon.ico
+  navbar:
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Data Summary"
+        href: Rotoiti-qc-summary.qmd
+      - text: "Metadata"
+        href: metadata.qmd
+      - text: "QA/QC"
+        href: data-qc.qmd
+      - text: "License"
+        href: LICENSE.md
+        
+  # sidebar:
+  #   style: "docked"   # options: floating, docked, overlay
+  #   search: true
+  #   contents:
+  #     - section: "Main"
+  #       contents:
+  #         - text: "Home"
+  #           href: index.qmd
+  #         - text: "Data Summary"
+  #           href: rotoehu-qc-summary.qmd
+  #         - text: "License"
+  #           href: LICENSE.md
+
+format:
+  html:
+    theme:
+      - cosmo
+      - custom.scss
+    toc: false
+    favicon: assets/favicon.ico
+
+execute:
+  freeze: auto  # don't re-run everything
+  cache: false  # save memory/disk

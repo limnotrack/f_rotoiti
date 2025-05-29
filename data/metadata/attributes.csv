@@ -1,0 +1,112 @@
+fileName,variableName,description,unitText
+device_position.csv,site,Site of measurement,NA
+device_position.csv,device_id,Device ID,NA
+device_position.csv,reference,"Reference point, can be either depth (d), height (h) or elevation (e)",NA
+device_position.csv,z_relative,Relative distance from reference point,NA
+device_variable.csv,device_id,Device ID,NA
+device_variable.csv,var_abbr,Variable abbreviation,NA
+qc_filters.csv,var_abbr,Variable abbreviation,NA
+qc_filters.csv,low,Low value to set values to NA if they are below this value,NA
+qc_filters.csv,high,High value to set values to NA if they are above this value,NA
+qc_filters.csv,roc,Rate of change to set values to NA which change from the previous value by greater than this value,NA
+qc_filters.csv,consec,Set values to NA if there are consecutive values greater than this value,NA
+qc_filters.csv,interp,Interpolate values if there is a data gap less than this value,NA
+rotoiti_qc.csv,datetime,Date and time of measurement,NA
+rotoiti_qc.csv,site,Site of measurement,NA
+rotoiti_qc.csv,qc_value_t_wtr_d50,Water temperature at 0.5m,degree_Celsius
+rotoiti_qc.csv,qc_value_t_wtr_d200,Water temperature at 2.0m,degree_Celsius
+rotoiti_qc.csv,qc_value_t_wtr_d400,Water temperature at 4.0m,degree_Celsius
+rotoiti_qc.csv,qc_value_t_wtr_d600,Water temperature at 6.0m,degree_Celsius
+rotoiti_qc.csv,qc_value_t_wtr_d900,Water temperature at 9.0m,degree_Celsius
+rotoiti_qc.csv,qc_value_t_wtr_d1200,Water temperature at 12.0m,degree_Celsius
+rotoiti_qc.csv,qc_value_t_wtr_d1500,Water temperature at 15.0m,degree_Celsius
+rotoiti_qc.csv,qc_value_t_wtr_d1810,Water temperature at 18.1m,degree_Celsius
+rotoiti_qc.csv,qc_value_t_wtr_d1800,Water temperature at 18.0m,degree_Celsius
+rotoiti_qc.csv,qc_value_t_wtr_d2100,Water temperature at 21.0m,degree_Celsius
+rotoiti_qc.csv,qc_value_c_do_d100,Dissolved oxygen concentration at 1.0m,mg/l
+rotoiti_qc.csv,qc_value_c_do_d1800,Dissolved oxygen concentration at 18.0m,mg/l
+rotoiti_qc.csv,qc_value_c_do_sat_d100,Dissolved oxygen percent saturation at 1.0m,percent
+rotoiti_qc.csv,qc_value_c_do_sat_d1800,Dissolved oxygen percent saturation at 18.0m,percent
+rotoiti_qc.csv,qc_value_w_spd_h150,Wind speed at 1.5m,m/s
+rotoiti_qc.csv,qc_value_w_dir_h150,Wind direction at 1.5m,degree
+rotoiti_qc.csv,qc_value_f_chl_d100,Chlorophyll fluorescence at 1.0m,RFU
+rotoiti_qc.csv,qc_code_t_wtr_d50,Quality control code for water temperature at 0.5m,NA
+rotoiti_qc.csv,qc_code_t_wtr_d200,Quality control code for water temperature at 2.0m,NA
+rotoiti_qc.csv,qc_code_t_wtr_d400,Quality control code for water temperature at 4.0m,NA
+rotoiti_qc.csv,qc_code_t_wtr_d600,Quality control code for water temperature at 6.0m,NA
+rotoiti_qc.csv,qc_code_t_wtr_d900,Quality control code for water temperature at 9.0m,NA
+rotoiti_qc.csv,qc_code_t_wtr_d1200,Quality control code for water temperature at 12.0m,NA
+rotoiti_qc.csv,qc_code_t_wtr_d1500,Quality control code for water temperature at 15.0m,NA
+rotoiti_qc.csv,qc_code_t_wtr_d1810,Quality control code for water temperature at 18.1m,NA
+rotoiti_qc.csv,qc_code_t_wtr_d1800,Quality control code for water temperature at 18.0m,NA
+rotoiti_qc.csv,qc_code_t_wtr_d2100,Quality control code for water temperature at 21.0m,NA
+rotoiti_qc.csv,qc_code_c_do_d100,Quality control code for dissolved oxygen concentration at 1.0m,NA
+rotoiti_qc.csv,qc_code_c_do_d1800,Quality control code for dissolved oxygen concentration at 18.0m,NA
+rotoiti_qc.csv,qc_code_c_do_sat_d100,Quality control code for dissolved oxygen percent saturation at 1.0m,NA
+rotoiti_qc.csv,qc_code_c_do_sat_d1800,Quality control code for dissolved oxygen percent saturation at 18.0m,NA
+rotoiti_qc.csv,qc_code_w_spd_h150,Quality control code for wind speed at 1.5m,NA
+rotoiti_qc.csv,qc_code_w_dir_h150,Quality control code for wind direction at 1.5m,NA
+rotoiti_qc.csv,qc_code_f_chl_d100,Quality control code for chlorophyll fluorescence at 1.0m,NA
+rotoiti_qc.csv,qc_flag_t_wtr_d50,Quality control flag for water temperature at 0.5m,NA
+rotoiti_qc.csv,qc_flag_t_wtr_d200,Quality control flag for water temperature at 2.0m,NA
+rotoiti_qc.csv,qc_flag_t_wtr_d400,Quality control flag for water temperature at 4.0m,NA
+rotoiti_qc.csv,qc_flag_t_wtr_d600,Quality control flag for water temperature at 6.0m,NA
+rotoiti_qc.csv,qc_flag_t_wtr_d900,Quality control flag for water temperature at 9.0m,NA
+rotoiti_qc.csv,qc_flag_t_wtr_d1200,Quality control flag for water temperature at 12.0m,NA
+rotoiti_qc.csv,qc_flag_t_wtr_d1500,Quality control flag for water temperature at 15.0m,NA
+rotoiti_qc.csv,qc_flag_t_wtr_d1810,Quality control flag for water temperature at 18.1m,NA
+rotoiti_qc.csv,qc_flag_t_wtr_d1800,Quality control flag for water temperature at 18.0m,NA
+rotoiti_qc.csv,qc_flag_t_wtr_d2100,Quality control flag for water temperature at 21.0m,NA
+rotoiti_qc.csv,qc_flag_c_do_d100,Quality control flag for dissolved oxygen concentration at 1.0m,NA
+rotoiti_qc.csv,qc_flag_c_do_d1800,Quality control flag for dissolved oxygen concentration at 18.0m,NA
+rotoiti_qc.csv,qc_flag_c_do_sat_d100,Quality control flag for dissolved oxygen percent saturation at 1.0m,NA
+rotoiti_qc.csv,qc_flag_c_do_sat_d1800,Quality control flag for dissolved oxygen percent saturation at 18.0m,NA
+rotoiti_qc.csv,qc_flag_w_spd_h150,Quality control flag for wind speed at 1.5m,NA
+rotoiti_qc.csv,qc_flag_w_dir_h150,Quality control flag for wind direction at 1.5m,NA
+rotoiti_qc.csv,qc_flag_f_chl_d100,Quality control flag for chlorophyll fluorescence at 1.0m,NA
+sensor_calibrations.csv,device_id,Device ID,NA
+sensor_calibrations.csv,date,Date of calibration,NA
+sensor_calibrations.csv,site,Site of measurement,NA
+sensor_calibrations.csv,variable,Variable abbreviation,NA
+sensor_calibrations.csv,temperature,Temperature at calibration,NA
+sensor_calibrations.csv,type,Type of calibration,NA
+sensor_calibrations.csv,comment,Comment,NA
+sensor_reference.csv,device_id,Device ID,NA
+sensor_reference.csv,date,Date of reference measurement,NA
+sensor_reference.csv,reference_type,"Type of reference (e.g. buffer, saturated water)",NA
+sensor_reference.csv,value_actual,Value of the reference,NA
+sensor_reference.csv,units_value,Units of the value,NA
+sensor_reference.csv,value_measured,Measured value by the sensor,NA
+sensor_reference.csv,units_sensor,Units of the sensor,NA
+sensor_reference.csv,temperature,Temperature of the reference type at measurement,NA
+sensor_reference.csv,comment,Comment,NA
+sensor_scaling.csv,device_id,Device ID,NA
+sensor_scaling.csv,date,Date,NA
+sensor_scaling.csv,offset,Offset applied to sensor measurement,NA
+sensor_scaling.csv,multiplier,Multiplier applied to sensor measurement,NA
+sensor_scaling.csv,range,Range of measurements,NA
+sensor_scaling.csv,log_multiplier,Multiplier applied at the logger,NA
+sensor_scaling.csv,source,Source of information,NA
+sensor_scaling.csv,comment,Comment,NA
+site_devices.csv,site,Site of measurement,NA
+site_devices.csv,device_id,Device ID,NA
+site_devices.csv,date_from,Date device is deployed to site,NA
+site_devices.csv,date_to,Date device is retrieved from site,NA
+site_events.csv,site,Site of measurement,NA
+site_events.csv,date,Date,NA
+site_events.csv,site_visit,"Was the site visited, logical value",NA
+site_events.csv,variables,List of variables or can be all,NA
+site_events.csv,action,"Type of action at site such as deployed, removed, cleaned",NA
+site_events.csv,comments,Comment,NA
+sites.csv,site,Site of measurement,NA
+sites.csv,location,Location of site,NA
+sites.csv,type,Type of monitoring site,NA
+sites.csv,customer,Customer,NA
+sites.csv,lon,Longitude,NA
+sites.csv,lat,Latitude,NA
+sites.csv,elev,Elevation,NA
+variables.csv,type,Type of variable,NA
+variables.csv,abbr,Abbreviation of variable,NA
+variables.csv,full_text,Full text variable name,NA
+variables.csv,parsed,Variable name to be parsed,NA
+variables.csv,label,Label for variable,NA
