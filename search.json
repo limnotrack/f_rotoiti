@@ -1,0 +1,226 @@
+[
+  {
+    "objectID": "metadata.html",
+    "href": "metadata.html",
+    "title": "Metadata",
+    "section": "",
+    "text": "The metadata for the Rotoiti project is within the rotoiti_data_qc.zip folder. This folder contains the metadata for the project, including the device position, device variable, quality control filters, sensor calibrations, sensor reference, sensor scaling, site devices, site events, sites and variables.\nIn this document, we will describe the contents of each file in the rotoiti_data_qc.zip folder. The files are in CSV format."
+  },
+  {
+    "objectID": "metadata.html#load-libraries",
+    "href": "metadata.html#load-libraries",
+    "title": "Metadata",
+    "section": "Load libraries",
+    "text": "Load libraries\n\nlibrary(dplyr)\nlibrary(readr)\nlibrary(DT)\n\n# Set timezone to NZST\nwithr::local_locale(c(\"LC_TIME\" = \"C\"))\nwithr::local_timezone(\"Etc/GMT-12\")"
+  },
+  {
+    "objectID": "metadata.html#device-position",
+    "href": "metadata.html#device-position",
+    "title": "Metadata",
+    "section": "2.1 Device position",
+    "text": "2.1 Device position\nThe device position is stored in a CSV file. The file contains the following columns:\n\ndevice_id: The unique identifier for the device.\nreference: The location of the device. This can be depth (“d”), height (“h”) or elevation (“e”).\nz_relative: The relative position of the device in meters. This is the distance from the reference point to the device.\n\n\ndevice_position &lt;- read_csv(\"rotoiti_data_qc/device_position.csv\", col_types = cols())\ndevice_position\n\n\n\n\n\nTable 1: Device position and relative distance."
+  },
+  {
+    "objectID": "metadata.html#device-variable",
+    "href": "metadata.html#device-variable",
+    "title": "Metadata",
+    "section": "2.2 Device variable",
+    "text": "2.2 Device variable\nThe device variable is stored in a CSV file. The file contains the following columns:\n\ndevice_id: The unique identifier for the device.\nvar_abbr: The variable abbreviation. This is the short name for the variable.\n\n\ndevice_variable &lt;- read_csv(\"rotoiti_data_qc/device_variable.csv\", col_types = cols())\ndevice_variable\n\n\n\n\n\nTable 2: Device variable mapping."
+  },
+  {
+    "objectID": "metadata.html#quality-control-filters",
+    "href": "metadata.html#quality-control-filters",
+    "title": "Metadata",
+    "section": "2.3 Quality control filters",
+    "text": "2.3 Quality control filters\nThe quality control filters are stored in a CSV file. The file contains the following columns:\n\nvar_abbr: The variable abbreviation. This is the short name for the variable.\nlow: The lower limit for the variable. This is the minimum value for the variable.\nhigh: The upper limit for the variable. This is the maximum value for the variable.\nroc: The rate of change for the variable. This is the maximum rate of change for the variable.\nconsec: The consecutive number of points for the variable. This is the minimum number of consecutive points for the variable.\ninterp: The interpolation for the variable. This is the maximum number of points for the variable.\n\n\nqc_filters &lt;- read_csv(\"rotoiti_data_qc/qc_filters.csv\", col_types = cols())\n\nqc_filters \n\n\n\n\n\nTable 3: Quality control filters."
+  },
+  {
+    "objectID": "metadata.html#quality-controlled-data",
+    "href": "metadata.html#quality-controlled-data",
+    "title": "Metadata",
+    "section": "2.4 Quality controlled data",
+    "text": "2.4 Quality controlled data\nThis is the finished quality controlled data. There is a summary of this data on the Quality control page."
+  },
+  {
+    "objectID": "metadata.html#sensor-calibrations",
+    "href": "metadata.html#sensor-calibrations",
+    "title": "Metadata",
+    "section": "2.5 Sensor calibrations",
+    "text": "2.5 Sensor calibrations\nThe sensor calibrations are stored in a CSV file. The file contains the following columns: - device_id: The unique identifier for the device. - date: The date of the calibration. - site: The site of the calibration. - variable: The variable of the calibration. - temperature: The temperature of the calibration. - type: The type of calibration. - comment: The comment for the calibration.\n\nsensor_calibrations &lt;- read_csv(\"rotoiti_data_qc/sensor_calibrations.csv\", col_types = cols())\n\nsensor_calibrations\n\n\n\n\n\nTable 4: Sensor calibrations."
+  },
+  {
+    "objectID": "metadata.html#sensor-reference",
+    "href": "metadata.html#sensor-reference",
+    "title": "Metadata",
+    "section": "2.6 Sensor reference",
+    "text": "2.6 Sensor reference\nThe sensor reference is stored in a CSV file. The file contains the following columns:\n\ndevice_id: The unique identifier for the device.\ndate: The date of the reference measurement.\nreference_type: The type of reference measurement.\nvalue_actual: The actual value of the reference measurement.\nunits_value: The units of the actual value.\nvalue_measured: The measured value of the reference measurement.\nunits_sensor: The units of the measured value.\ntemperature: The temperature of the reference measurement.\ncomment: The comment for the reference measurement.\n\n\nsensor_reference &lt;- read_csv(\"rotoiti_data_qc/sensor_reference.csv\", col_types = cols())\n\nsensor_reference\n\n\n\n\n\nTable 5: Sensor reference measurements."
+  },
+  {
+    "objectID": "metadata.html#sensor-scaling",
+    "href": "metadata.html#sensor-scaling",
+    "title": "Metadata",
+    "section": "2.7 Sensor scaling",
+    "text": "2.7 Sensor scaling\nThe sensor scaling is stored in a CSV file. The file contains the following columns:\n\ndevice_id: The unique identifier for the device.\ndate: The date of the scaling.\noffset: The offset for the scaling.\nmultiplier: The multiplier for the scaling.\nrange: The range for the scaling.\nlog_multiplier: The logger multiplier for the scaling.\nsource: The source of the scaling factors.\ncomment: The comment for the scaling.\n\n\nsensor_scaling &lt;- read_csv(\"rotoiti_data_qc/sensor_scaling.csv\", col_types = cols())\n\nsensor_scaling\n\n\n\n\n\nTable 6: Sensor scaling relationships."
+  },
+  {
+    "objectID": "metadata.html#site-devices",
+    "href": "metadata.html#site-devices",
+    "title": "Metadata",
+    "section": "2.8 Site devices",
+    "text": "2.8 Site devices\nThe site devices are stored in a CSV file. The file contains the following columns:\n\nsite: The site of the device.\ndevice_id: The unique identifier for the device.\ndate_from: The date the device was installed.\ndate_to: The date the device was removed.\nnotes_device: The notes for the device.\nnotes: The notes for the site.\n\n\nsite_devices &lt;- read_csv(\"rotoiti_data_qc/site_devices.csv\", col_types = cols())\n\nsite_devices\n\n\n\n\n\nTable 7: Site devices."
+  },
+  {
+    "objectID": "metadata.html#site-events",
+    "href": "metadata.html#site-events",
+    "title": "Metadata",
+    "section": "2.9 Site events",
+    "text": "2.9 Site events\nThe site events are stored in a CSV file. The file contains the following columns:\n\nsite: The site of the event.\ndate: The date of the event.\nsite_visit: Was the site visited?\nvariables: The variables of the event.\naction: The action of the event. Can be “deployed”, “removed”, “cleaned”, “rebooted” or “other”.\ncomment: The comment for the event.\n\n\nsite_events &lt;- read_csv(\"rotoiti_data_qc/site_events.csv\", col_types = cols())\n\nsite_events\n\n\n\n\n\nTable 8: Site events."
+  },
+  {
+    "objectID": "metadata.html#sites",
+    "href": "metadata.html#sites",
+    "title": "Metadata",
+    "section": "2.10 Sites",
+    "text": "2.10 Sites\nThe sites are stored in a CSV file. The file contains the following columns:\n\nsite: The site of the device.\nlocation: The location of the site.\ntype: The type of site. Can be “lake”, “river” or “other”.\ncustomer: The customer of the site.\nlon: The longitude of the site.\nlat: The latitude of the site.\nelev: The elevation of the site.\n\n\nsites &lt;- read_csv(\"rotoiti_data_qc/sites.csv\", col_types = cols())\n\nsites\n\n\n\n\n\nTable 9: Sites."
+  },
+  {
+    "objectID": "metadata.html#variables",
+    "href": "metadata.html#variables",
+    "title": "Metadata",
+    "section": "2.11 Variables",
+    "text": "2.11 Variables\nThe variables are stored in a CSV file. The file contains the following columns:\n\nvar_abbr: The variable abbreviation. This is the short name for the variable.\nfull_text: The full text of the variable. This is the long name for the variable.\nparsed: The parsed name of the variable. This is the name used for plotting.\nlabel: The label of the variable. This is the name used for the legend.\n\n\nvariables &lt;- read_csv(\"rotoiti_data_qc/variables.csv\", col_types = cols())\n\nvariables\n\n\n\n\n\nTable 10: Variables."
+  },
+  {
+    "objectID": "data-qc.html",
+    "href": "data-qc.html",
+    "title": "Rotoiti QC",
+    "section": "",
+    "text": "The raw data was downloaded from the Bay of Plenty hydroTel SFTP server. The data were then collated into a CSV file which can be downloaded from GitHub or within R using the piggyback package. The data are stored in the data-raw folder.\n\ndownload &lt;- TRUE\n\nif (download) {\n  dir.create(\"data-raw\", showWarnings = FALSE)\n  # Hydrotel data\n  piggyback::pb_download(\n    file = \"rotoiti_data_raw.zip\",\n    dest = \".\",\n    repo = \"limnotrack/f_rotoiti\",\n    tag = \"v0.0.1\", overwrite = TRUE\n  )\n  \n  # Unzip the file to tempdir\n  tmp_dir &lt;- tempdir()\n  unzip(\"rotoiti_data_raw.zip\", exdir = tmp_dir)\n  \n  # Move files into data-raw\n  file.copy(list.files(file.path(tmp_dir, \"rotoiti_data_raw\"), full.names = TRUE),\n            \"data-raw\", overwrite = TRUE)\n  \n  # Delete zip file\n  unlink(\"rotoiti_data_raw.zip\", force = TRUE)\n}\n\n# Read in raw data\ndat &lt;- read_csv(\"data-raw/rotoiti_sftp_compiled_raw.csv\") |&gt; \n  mutate(datetime = as_datetime(Date)) |&gt; \n  select(-Date) |&gt; \n  arrange(datetime)\n\nRows: 467194 Columns: 24\n── Column specification ────────────────────────────────────────────────────────\nDelimiter: \",\"\ndbl  (23): battery_voltage, chlorophyll_1m, compass_heading, dir, do_conc_18...\ndttm  (1): Date\n\nℹ Use `spec()` to retrieve the full column specification for this data.\nℹ Specify the column types or set `show_col_types = FALSE` to quiet this message."
+  },
+  {
+    "objectID": "data-qc.html#standardise-to-15-minute-data-i.e.-modify-any-periods-where-data-were-logged-every-5-minutes.",
+    "href": "data-qc.html#standardise-to-15-minute-data-i.e.-modify-any-periods-where-data-were-logged-every-5-minutes.",
+    "title": "Rotoiti QC",
+    "section": "2.1 Standardise to 15-minute data (i.e. modify any periods where data were logged every 5-minutes.",
+    "text": "2.1 Standardise to 15-minute data (i.e. modify any periods where data were logged every 5-minutes.\n\nCircular average for wind direction, sum for rainfall, mean for everything else.\n\n\nwind_dir &lt;- dat |&gt; \n  select(datetime, contains(\"dir\")) |&gt;\n  standardise(15, FUN = avg_circ)\n\nmean_vars &lt;- c(\"datetime\", \n               \"do_conc_1m\", \"do_conc_18m\",\n               \"do_sat_1m\", \"do_sat_18m\",\n               \"ph_decommissioned\", \"ph_raw\",\n               \"temp_0m\", \"temp_2m\", \"temp_4m\", \"temp_6m\", \"temp_9m\",\n               \"temp_12m\", \"temp_15m\", \"temp_18m\", \"temp_21m\",\n               \"chlorophyll_1m\", \n               \"wind_speed_m-s\", \"wind_speed\")\n\nmeans &lt;- dat |&gt;\n  select(contains(mean_vars)) |&gt;\n  standardise(15, FUN = mean, na.rm = TRUE)\n\ndate_df &lt;- data.frame(datetime = seq.POSIXt(round_date(min(dat$datetime), \"15 mins\"),\n                                            round_date(max(dat$datetime), \"15 mins\"),\n                                            by = 15*60))\n\ndat2 &lt;- list(date_df, means, wind_dir) |&gt; \n  # left_join(means, by = \"datetime\") |&gt;\n  purrr::reduce(function(x, y) {left_join(x, y, by = \"datetime\")}) |&gt;\n  arrange(datetime)"
+  },
+  {
+    "objectID": "data-qc.html#map-column-names",
+    "href": "data-qc.html#map-column-names",
+    "title": "Rotoiti QC",
+    "section": "2.2 Map column names",
+    "text": "2.2 Map column names\nMap column names to standard names used in the database.\n\ncol_mapping &lt;- c(\n  \"f_chl_d100\" = \"chlorophyll_1m\",\n  \"c_do_d100\" = \"do_conc_1m\",\n  \"c_do_d1800\" = \"do_conc_18m\",\n  \"c_do_sat_d100\" = \"do_sat_1m\",\n  \"c_do_sat_d1800\" = \"do_sat_18m\",\n  \"t_wtr_d50\" = \"temp_0m\",\n  \"t_wtr_d200\" = \"temp_2m\",\n  \"t_wtr_d400\" = \"temp_4m\",\n  \"t_wtr_d600\" = \"temp_6m\",\n  \"t_wtr_d900\" = \"temp_9m\",\n  \"t_wtr_d1200\" = \"temp_12m\",\n  \"t_wtr_d1500\" = \"temp_15m\",\n  \"t_wtr_d1800\" = \"temp_18m\",\n  \"t_wtr_d1810\" = \"do_temp_18m\",\n  \"t_wtr_d2100\" = \"temp_21m\",\n  \"w_spd_h150\" = \"wind_speed_m-s\",\n  \"w_dir_h150\" = \"dir\")\n\n\ndat3 &lt;- standardise_columns(dat2, col_mapping) |&gt; \n  select(-wind_speed)\n\nWrite level one raw data to file.\n\nwrite_csv(dat3, \"data-raw/rotoiti_sftp_compiled_raw_level1.csv\")"
+  },
+  {
+    "objectID": "data-qc.html#remove-based-on-site-events",
+    "href": "data-qc.html#remove-based-on-site-events",
+    "title": "Rotoiti QC",
+    "section": "3.1 Remove based on site events",
+    "text": "3.1 Remove based on site events\n\n# raw_long_device &lt;- raw_long_device |&gt; \n#   remove_site_events(site_events = site_events, sensor_map = sensor_map) \n# \n# raw_long_device |&gt; \n#   filter(qc_flag == \"sensor_fault\") \n\n# plot_qc_data(data = raw_long_device_filt)"
+  },
+  {
+    "objectID": "data-qc.html#basic-qc---filters",
+    "href": "data-qc.html#basic-qc---filters",
+    "title": "Rotoiti QC",
+    "section": "4.1 Basic QC - filters",
+    "text": "4.1 Basic QC - filters\n\nFilter extreme outliers (order of magnitude plus)\nFilter repetitions/stuck values (careful genuine repeats e.g., rainfall == 0)\nRemove data for any periods where buoy was clearly out of the water (see notes or visual check of data)\n\n\nraw_long_device_filt &lt;- apply_filters(raw_long_device2, filters = qc_filters)\n\n\n\n\n\n\n\n\n\nplot_flag_ts(raw_long_device_filt)\n\n\n\n\n\n\n\nFigure 2: Plot raw data with basic QC filters applied."
+  },
+  {
+    "objectID": "data-qc.html#load-in-field-measurements",
+    "href": "data-qc.html#load-in-field-measurements",
+    "title": "Rotoiti QC",
+    "section": "5.1 Load in field measurements",
+    "text": "5.1 Load in field measurements\nCompare field measurements to sensor data.\n\nfield &lt;- read_csv(\"data-raw/rotoiti_field_data.csv\") |&gt; \n  mutate(Date2 = as.Date(Date))\n\nchla &lt;- field |&gt; \n  filter(grepl(\"Chla\", Parameter)) |&gt; \n  select(Date2, LocationName, DepthFrom, Sample_Depth, Value) |&gt; \n  rename(Date = Date2)\n\nref_times &lt;- raw_long_device_filt |&gt; \n  mutate(hour = hour(datetime)) |&gt; \n  filter(var_abbr %in% c(\"f_chl\")) |&gt;\n  filter(hour %in% c(0:6, 21:23)) |&gt; \n  filter(as.Date(datetime) %in% as.Date(chla$Date))\n\nsub_sensor &lt;- raw_v |&gt; \n  mutate(Date = as.Date(datetime)) |&gt;\n  filter(datetime %in% ref_times$datetime) |&gt; \n  group_by(Date, device_id) |&gt;\n  summarise(qc_value = mean(qc_value, na.rm = TRUE),\n            median = median(qc_value, na.rm = TRUE), .groups = \"drop\")\n\n\n\ndf &lt;- sub_sensor |&gt; \n  left_join(chla, by = c(\"Date\" = \"Date\")) |&gt; \n  mutate(year = year(Date)) |&gt; \n  filter(!is.na(qc_value))\n\nggplot() +\n  geom_point(data = df, aes(qc_value, Value, colour = LocationName)) +\n  geom_smooth(data = df, aes(qc_value, Value, colour = LocationName), method = \"lm\") +\n  # facet_wrap(year~device_id, scales = \"free\") +\n  labs(x = \"Sensor value (Volts)\",\n       y = \"Field value (ug/L)\") +\n  coord_cartesian(ylim = c(0, 50)) +\n  theme_bw() +\n  theme(legend.position = \"bottom\") \n\nggplot() +\n  geom_point(data = df, aes(qc_value, Value, colour = device_id)) +\n  geom_smooth(data = df, aes(qc_value, Value, colour = device_id), method = \"lm\") +\n  facet_wrap(~device_id, scales = \"free\") +\n  labs(x = \"Sensor value (Volts)\",\n       y = \"Field value (ug/L)\") +\n  # coord_cartesian(ylim = c(0, 50)) +\n  theme_bw() +\n  theme(legend.position = \"bottom\") \n\n\n\n\n\n\n\nFigure 5: Compare field measurements to sensor data.\n\n\n\n\n\n\n\n\n\n\n\nFigure 6: Compare field measurements to sensor data."
+  },
+  {
+    "objectID": "data-qc.html#water-temperature",
+    "href": "data-qc.html#water-temperature",
+    "title": "Rotoiti QC",
+    "section": "7.1 Water temperature",
+    "text": "7.1 Water temperature\n\nwtemp &lt;- raw_long_device_filt |&gt; \n  filter(var_abbr %in% c(\"t_wtr\")) |&gt;\n  update_qc_code_vectorized(qc_update_df = qc_update_df)\n\n\nplot_raw_qc(data = wtemp, variable_ref = variable_ref, ylim = c(7, 30))"
+  },
+  {
+    "objectID": "data-qc.html#check-for-offsets-between-temperature-nodes",
+    "href": "data-qc.html#check-for-offsets-between-temperature-nodes",
+    "title": "Rotoiti QC",
+    "section": "7.2 Check for offsets between temperature nodes",
+    "text": "7.2 Check for offsets between temperature nodes\nGenerally the temperature data falls within the expected range, but there are some offsets between the sensors. The following plot shows the estimated temperatures for 10 and 25 degrees C, using calculated offsets based on when the temperature difference between the sensors are in 5% of the distribution.\nThe temperature from the DO sensors (1m and 10m) have a lower accuracy (0.5 C).\n\ntemp_strings &lt;- wtemp |&gt;\n  # Filter out oxygen depths\n  filter(!var_ref_id %in% c(\"t_wtr_d1810\")) |&gt; \n  pull(device_id) |&gt; \n  unique()\n\n\ntemp_devices &lt;- site_devices |&gt; \n  filter(device_id %in% temp_strings)\n\n\n\n\n\n\n\n\n\nFigure 9: Check for offsets between temperature nodes"
+  },
+  {
+    "objectID": "data-qc.html#temperature",
+    "href": "data-qc.html#temperature",
+    "title": "Rotoiti QC",
+    "section": "9.1 Temperature",
+    "text": "9.1 Temperature\n\nplot_var_ts_qc(data = data, var_ref_id = c(\"t_wtr_d50\", \"t_wtr_d200\",\n                                           \"t_wtr_d400\", \"t_wtr_d600\",\n                                           \"t_wtr_d900\", \"t_wtr_d1200\",\n                                           \"t_wtr_d1500\", \"t_wtr_d1800\", \n                                           \"t_wtr_d1810\", \"t_wtr_d2100\"))\n\n\n\n\n\n\n\nFigure 11: Temperature data at various depths quality control."
+  },
+  {
+    "objectID": "data-qc.html#oxygen",
+    "href": "data-qc.html#oxygen",
+    "title": "Rotoiti QC",
+    "section": "9.2 Oxygen",
+    "text": "9.2 Oxygen\n\nplot_var_ts_qc(data = data, var_ref_id = c(\"c_do_sat_d100\", \"c_do_sat_d1800\"))\n\n\n\n\n\n\n\nFigure 12: Oxygen saturation data at 1 and 10m depths quality control.\n\n\n\n\n\n\nplot_var_ts_qc(data = data, var_ref_id = c(\"c_do_d100\", \"c_do_d1800\"))\n\n\n\n\n\n\n\nFigure 13: Oxygen data at 1 and 10m depths quality control."
+  },
+  {
+    "objectID": "data-qc.html#chlorophyll",
+    "href": "data-qc.html#chlorophyll",
+    "title": "Rotoiti QC",
+    "section": "9.3 Chlorophyll",
+    "text": "9.3 Chlorophyll\n\nplot_var_ts_qc(data = data, var_ref_id = c(\"f_chl_d100\"))\n\n\n\n\n\n\n\nFigure 14: Chlorophyll data at 1.0m quality control."
+  },
+  {
+    "objectID": "data-qc.html#meteorological-variables",
+    "href": "data-qc.html#meteorological-variables",
+    "title": "Rotoiti QC",
+    "section": "9.4 Meteorological variables",
+    "text": "9.4 Meteorological variables\n\nWind direction (°) mWind speed (kts) m"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "\nLake Rotoiti fixed buoy data\n",
+    "section": "",
+    "text": "Lake Rotoiti fixed buoy data\n\n\nDescription: This dataset contains high-frequency environmental measurements collected by a fixed sensor buoy deployed in Lake Rotoiti. The buoy was equipped with a temperature string spanning the water column, along with surface sensors for chlorophyll-a, and dissolved oxygen. Additional dissolved oxygen measurements were recorded at the lake bottom. A meteorological station mounted on the buoy recorded atmospheric conditions including wind speed, and wind direction. These observations support the characterization of physical, chemical, and biological dynamics in Lake Rotoiti over time.\n\n\nBibliographic\n\n\n\n\nPublished\n\n\n\n\n\n\nKeywords\n\n\n\n\nlake monitoring\n\n\nhigh-frequency data\n\n\nsensor buoy\n\n\nwater quality\n\n\nmeteorological measurements\n\n\n\n\n\n\nFunder\n\n\nBay of Plenty Regional Council\n\n\n\n\nLicense\n\n\nCC BY 4.0\n\n\n\n\nCoverage\n\n\nTemporal\n\n\n\n\nBegin\n\n\n2007-01-12 5:00\n\n\n\n\nEnd\n\n\n2022-05-04 11:45:00\n\n\n\n\nSpatial\n\n\n\n\n\n\nAttributes\n\n\n\n\n\n\nName\n\n\nDescription\n\n\nUnit\n\n\n\n\n\n\nsite\n\n\nSite of measurement\n\n\n\n\n\n\ndevice_id\n\n\nDevice ID\n\n\n\n\n\n\nreference\n\n\nReference point, can be either depth (d), height (h) or elevation (e)\n\n\n\n\n\n\nz_relative\n\n\nRelative distance from reference point\n\n\n\n\n\n\nvar_abbr\n\n\nVariable abbreviation\n\n\n\n\n\n\nlow\n\n\nLow value to set values to NA if they are below this value\n\n\n\n\n\n\nhigh\n\n\nHigh value to set values to NA if they are above this value\n\n\n\n\n\n\nroc\n\n\nRate of change to set values to NA which change from the previous value by greater than this value\n\n\n\n\n\n\nconsec\n\n\nSet values to NA if there are consecutive values greater than this value\n\n\n\n\n\n\ninterp\n\n\nInterpolate values if there is a data gap less than this value\n\n\n\n\n\n\ndatetime\n\n\nDate and time of measurement\n\n\n\n\n\n\nqc_value_t_wtr_d50\n\n\nWater temperature at 0.5m\n\n\ndegree_Celsius\n\n\n\n\nqc_value_t_wtr_d200\n\n\nWater temperature at 2.0m\n\n\ndegree_Celsius\n\n\n\n\nqc_value_t_wtr_d400\n\n\nWater temperature at 4.0m\n\n\ndegree_Celsius\n\n\n\n\nqc_value_t_wtr_d600\n\n\nWater temperature at 6.0m\n\n\ndegree_Celsius\n\n\n\n\nqc_value_t_wtr_d900\n\n\nWater temperature at 9.0m\n\n\ndegree_Celsius\n\n\n\n\nqc_value_t_wtr_d1200\n\n\nWater temperature at 12.0m\n\n\ndegree_Celsius\n\n\n\n\nqc_value_t_wtr_d1500\n\n\nWater temperature at 15.0m\n\n\ndegree_Celsius\n\n\n\n\nqc_value_t_wtr_d1810\n\n\nWater temperature at 18.1m\n\n\ndegree_Celsius\n\n\n\n\nqc_value_t_wtr_d1800\n\n\nWater temperature at 18.0m\n\n\ndegree_Celsius\n\n\n\n\nqc_value_t_wtr_d2100\n\n\nWater temperature at 21.0m\n\n\ndegree_Celsius\n\n\n\n\nqc_value_c_do_d100\n\n\nDissolved oxygen concentration at 1.0m\n\n\nmg/l\n\n\n\n\nqc_value_c_do_d1800\n\n\nDissolved oxygen concentration at 18.0m\n\n\nmg/l\n\n\n\n\nqc_value_c_do_sat_d100\n\n\nDissolved oxygen percent saturation at 1.0m\n\n\npercent\n\n\n\n\nqc_value_c_do_sat_d1800\n\n\nDissolved oxygen percent saturation at 18.0m\n\n\npercent\n\n\n\n\nqc_value_w_spd_h150\n\n\nWind speed at 1.5m\n\n\nm/s\n\n\n\n\nqc_value_w_dir_h150\n\n\nWind direction at 1.5m\n\n\ndegree\n\n\n\n\nqc_value_f_chl_d100\n\n\nChlorophyll fluorescence at 1.0m\n\n\nRFU\n\n\n\n\nqc_code_t_wtr_d50\n\n\nQuality control code for water temperature at 0.5m\n\n\n\n\n\n\nqc_code_t_wtr_d200\n\n\nQuality control code for water temperature at 2.0m\n\n\n\n\n\n\nqc_code_t_wtr_d400\n\n\nQuality control code for water temperature at 4.0m\n\n\n\n\n\n\nqc_code_t_wtr_d600\n\n\nQuality control code for water temperature at 6.0m\n\n\n\n\n\n\nqc_code_t_wtr_d900\n\n\nQuality control code for water temperature at 9.0m\n\n\n\n\n\n\nqc_code_t_wtr_d1200\n\n\nQuality control code for water temperature at 12.0m\n\n\n\n\n\n\nqc_code_t_wtr_d1500\n\n\nQuality control code for water temperature at 15.0m\n\n\n\n\n\n\nqc_code_t_wtr_d1810\n\n\nQuality control code for water temperature at 18.1m\n\n\n\n\n\n\nqc_code_t_wtr_d1800\n\n\nQuality control code for water temperature at 18.0m\n\n\n\n\n\n\nqc_code_t_wtr_d2100\n\n\nQuality control code for water temperature at 21.0m\n\n\n\n\n\n\nqc_code_c_do_d100\n\n\nQuality control code for dissolved oxygen concentration at 1.0m\n\n\n\n\n\n\nqc_code_c_do_d1800\n\n\nQuality control code for dissolved oxygen concentration at 18.0m\n\n\n\n\n\n\nqc_code_c_do_sat_d100\n\n\nQuality control code for dissolved oxygen percent saturation at 1.0m\n\n\n\n\n\n\nqc_code_c_do_sat_d1800\n\n\nQuality control code for dissolved oxygen percent saturation at 18.0m\n\n\n\n\n\n\nqc_code_w_spd_h150\n\n\nQuality control code for wind speed at 1.5m\n\n\n\n\n\n\nqc_code_w_dir_h150\n\n\nQuality control code for wind direction at 1.5m\n\n\n\n\n\n\nqc_code_f_chl_d100\n\n\nQuality control code for chlorophyll fluorescence at 1.0m\n\n\n\n\n\n\nqc_flag_t_wtr_d50\n\n\nQuality control flag for water temperature at 0.5m\n\n\n\n\n\n\nqc_flag_t_wtr_d200\n\n\nQuality control flag for water temperature at 2.0m\n\n\n\n\n\n\nqc_flag_t_wtr_d400\n\n\nQuality control flag for water temperature at 4.0m\n\n\n\n\n\n\nqc_flag_t_wtr_d600\n\n\nQuality control flag for water temperature at 6.0m\n\n\n\n\n\n\nqc_flag_t_wtr_d900\n\n\nQuality control flag for water temperature at 9.0m\n\n\n\n\n\n\nqc_flag_t_wtr_d1200\n\n\nQuality control flag for water temperature at 12.0m\n\n\n\n\n\n\nqc_flag_t_wtr_d1500\n\n\nQuality control flag for water temperature at 15.0m\n\n\n\n\n\n\nqc_flag_t_wtr_d1810\n\n\nQuality control flag for water temperature at 18.1m\n\n\n\n\n\n\nqc_flag_t_wtr_d1800\n\n\nQuality control flag for water temperature at 18.0m\n\n\n\n\n\n\nqc_flag_t_wtr_d2100\n\n\nQuality control flag for water temperature at 21.0m\n\n\n\n\n\n\nqc_flag_c_do_d100\n\n\nQuality control flag for dissolved oxygen concentration at 1.0m\n\n\n\n\n\n\nqc_flag_c_do_d1800\n\n\nQuality control flag for dissolved oxygen concentration at 18.0m\n\n\n\n\n\n\nqc_flag_c_do_sat_d100\n\n\nQuality control flag for dissolved oxygen percent saturation at 1.0m\n\n\n\n\n\n\nqc_flag_c_do_sat_d1800\n\n\nQuality control flag for dissolved oxygen percent saturation at 18.0m\n\n\n\n\n\n\nqc_flag_w_spd_h150\n\n\nQuality control flag for wind speed at 1.5m\n\n\n\n\n\n\nqc_flag_w_dir_h150\n\n\nQuality control flag for wind direction at 1.5m\n\n\n\n\n\n\nqc_flag_f_chl_d100\n\n\nQuality control flag for chlorophyll fluorescence at 1.0m\n\n\n\n\n\n\ndate\n\n\nDate of calibration\n\n\n\n\n\n\nvariable\n\n\nVariable abbreviation\n\n\n\n\n\n\ntemperature\n\n\nTemperature at calibration\n\n\n\n\n\n\ntype\n\n\nType of calibration\n\n\n\n\n\n\ncomment\n\n\nComment\n\n\n\n\n\n\ndate\n\n\nDate of reference measurement\n\n\n\n\n\n\nreference_type\n\n\nType of reference (e.g. buffer, saturated water)\n\n\n\n\n\n\nvalue_actual\n\n\nValue of the reference\n\n\n\n\n\n\nunits_value\n\n\nUnits of the value\n\n\n\n\n\n\nvalue_measured\n\n\nMeasured value by the sensor\n\n\n\n\n\n\nunits_sensor\n\n\nUnits of the sensor\n\n\n\n\n\n\ntemperature\n\n\nTemperature of the reference type at measurement\n\n\n\n\n\n\ndate\n\n\nDate\n\n\n\n\n\n\noffset\n\n\nOffset applied to sensor measurement\n\n\n\n\n\n\nmultiplier\n\n\nMultiplier applied to sensor measurement\n\n\n\n\n\n\nrange\n\n\nRange of measurements\n\n\n\n\n\n\nlog_multiplier\n\n\nMultiplier applied at the logger\n\n\n\n\n\n\nsource\n\n\nSource of information\n\n\n\n\n\n\ndate_from\n\n\nDate device is deployed to site\n\n\n\n\n\n\ndate_to\n\n\nDate device is retrieved from site\n\n\n\n\n\n\nsite_visit\n\n\nWas the site visited, logical value\n\n\n\n\n\n\nvariables\n\n\nList of variables or can be all\n\n\n\n\n\n\naction\n\n\nType of action at site such as deployed, removed, cleaned\n\n\n\n\n\n\ncomments\n\n\nComment\n\n\n\n\n\n\nlocation\n\n\nLocation of site\n\n\n\n\n\n\ntype\n\n\nType of monitoring site\n\n\n\n\n\n\ncustomer\n\n\nCustomer\n\n\n\n\n\n\nlon\n\n\nLongitude\n\n\n\n\n\n\nlat\n\n\nLatitude\n\n\n\n\n\n\nelev\n\n\nElevation\n\n\n\n\n\n\ntype\n\n\nType of variable\n\n\n\n\n\n\nabbr\n\n\nAbbreviation of variable\n\n\n\n\n\n\nfull_text\n\n\nFull text variable name\n\n\n\n\n\n\nparsed\n\n\nVariable name to be parsed\n\n\n\n\n\n\nlabel\n\n\nLabel for variable\n\n\n\n\n\n\n\n\nDistribution\n\n\n\n\n\nFile\n\n\nFormat\n\n\n \n\n\n\n\n\n\ndevice_position\n\n\ncsv\n\n\nDownload\n\n\n\n\ndevice_variable\n\n\ncsv\n\n\nDownload\n\n\n\n\nqc_filters\n\n\ncsv\n\n\nDownload\n\n\n\n\nqc_update_table\n\n\ncsv\n\n\nDownload\n\n\n\n\nrotoiti_qc\n\n\ncsv\n\n\nDownload\n\n\n\n\nsensor_calibrations\n\n\ncsv\n\n\nDownload\n\n\n\n\nsensor_reference\n\n\ncsv\n\n\nDownload\n\n\n\n\nsensor_scaling\n\n\ncsv\n\n\nDownload\n\n\n\n\nsite_devices\n\n\ncsv\n\n\nDownload\n\n\n\n\nsite_events\n\n\ncsv\n\n\nDownload\n\n\n\n\nsites\n\n\ncsv\n\n\nDownload\n\n\n\n\nvariables\n\n\ncsv\n\n\nDownload"
+  },
+  {
+    "objectID": "rotoiti-qc-summary.html",
+    "href": "rotoiti-qc-summary.html",
+    "title": "Rotoiti QC Summary",
+    "section": "",
+    "text": "library(dplyr)\nlibrary(tidyr)\nlibrary(readr)\nlibrary(lubridate)\nlibrary(ggplot2)\nlibrary(scattermore)\nlibrary(DT)\nlibrary(patchwork)\n\n# Set timezone to NZST\nwithr::local_locale(c(\"LC_TIME\" = \"C\"))\nwithr::local_timezone(\"Etc/GMT-12\")\n\n# Load functions\nsource(\"R/qc_funs.R\")"
+  },
+  {
+    "objectID": "rotoiti-qc-summary.html#load-libraries",
+    "href": "rotoiti-qc-summary.html#load-libraries",
+    "title": "Rotoiti QC Summary",
+    "section": "",
+    "text": "library(dplyr)\nlibrary(tidyr)\nlibrary(readr)\nlibrary(lubridate)\nlibrary(ggplot2)\nlibrary(scattermore)\nlibrary(DT)\nlibrary(patchwork)\n\n# Set timezone to NZST\nwithr::local_locale(c(\"LC_TIME\" = \"C\"))\nwithr::local_timezone(\"Etc/GMT-12\")\n\n# Load functions\nsource(\"R/qc_funs.R\")"
+  },
+  {
+    "objectID": "rotoiti-qc-summary.html#temperature",
+    "href": "rotoiti-qc-summary.html#temperature",
+    "title": "Rotoiti QC Summary",
+    "section": "5.1 Temperature",
+    "text": "5.1 Temperature\n\nplot_var_ts_qc(data = data, var_ref_id = c(\"t_wtr_d50\", \"t_wtr_d200\",\n                                           \"t_wtr_d400\", \"t_wtr_d600\",\n                                           \"t_wtr_d900\", \"t_wtr_d1200\", \n                                           \"t_wtr_d1500\", \"t_wtr_d1800\", \n                                           \"t_wtr_d1810\",  \"t_wtr_d2100\"))\n\n\n\n\n\n\n\nFigure 1: Temperature data at various depths quality control."
+  },
+  {
+    "objectID": "rotoiti-qc-summary.html#oxygen-saturation",
+    "href": "rotoiti-qc-summary.html#oxygen-saturation",
+    "title": "Rotoiti QC Summary",
+    "section": "5.2 Oxygen saturation",
+    "text": "5.2 Oxygen saturation\n\nplot_var_ts_qc(data = data, var_ref_id = c(\"c_do_sat_d100\", \"c_do_sat_d1800\"))\n\n\n\n\n\n\n\nFigure 2: Oxygen saturation data at 1 and 18m depths quality control."
+  },
+  {
+    "objectID": "rotoiti-qc-summary.html#oxygen-concentration",
+    "href": "rotoiti-qc-summary.html#oxygen-concentration",
+    "title": "Rotoiti QC Summary",
+    "section": "5.3 Oxygen concentration",
+    "text": "5.3 Oxygen concentration\n\nplot_var_ts_qc(data = data, var_ref_id = c(\"c_do_d100\", \"c_do_d1800\"))\n\n\n\n\n\n\n\nFigure 3: Oxygen data at 1 and 18m depths quality control."
+  },
+  {
+    "objectID": "rotoiti-qc-summary.html#chlorophyll",
+    "href": "rotoiti-qc-summary.html#chlorophyll",
+    "title": "Rotoiti QC Summary",
+    "section": "5.4 Chlorophyll",
+    "text": "5.4 Chlorophyll\n\nplot_var_ts_qc(data = data, var_ref_id = c(\"f_chl_d100\"))\n\n\n\n\n\n\n\nFigure 4: Chlorophyll data at 1.0m quality control."
+  }
+]
