@@ -1,5 +1,10 @@
 project:
   type: website
+  render:
+    - index.qmd
+    - data-qc.qmd
+    - rotoiti-qc-summary.qmd
+    - metadata.qmd
 
 website:
   title: "Lake Rotoiti Data Product"
