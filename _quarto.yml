@@ -9,7 +9,7 @@ website:
       - text: "Home"
         href: index.qmd
       - text: "Data Summary"
-        href: Rotoiti-qc-summary.qmd
+        href: rotoiti-qc-summary.qmd
       - text: "Metadata"
         href: metadata.qmd
       - text: "QA/QC"
