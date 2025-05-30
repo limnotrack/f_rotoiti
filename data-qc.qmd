@@ -793,7 +793,11 @@ Remove bad data and correct for linear drift
 ```{r}
 #| label: filter-oxygen-sensors-1m
 do_1m <- raw_long_device_filt |> 
-  filter(var_ref_id %in% c("c_do_sat_d100"))
+  filter(var_ref_id %in% c("c_do_sat_d100")) |> 
+  drift_correction(var_ref_id = "c_do_sat_d100", 
+                   date_range = c("2017-05-13 12:29:20", "2020-11-09 23:18:35"), 
+                   low = c(0, 0, 0), high = c(100, 88, 88)) |> 
+  update_qc_code_vectorized(qc_update_df = qc_update_df)
 
 ```
 
@@ -807,12 +811,7 @@ do_1m <- raw_long_device_filt |>
 #            variable = "var_ref_id", value = "qc_value")
 # 
 # write_csv(qc_update_df, "qc_update_df.csv")
-
-do_1m <- do_1m |> 
-  drift_correction(var_ref_id = "c_do_sat_d100", 
-                   date_range = c("2017-05-13 12:29:20", "2020-11-09 23:18:35"), 
-                   low = c(0, 0, 0), high = c(100, 88, 88)) |> 
-  update_qc_code_vectorized(qc_update_df = qc_update_df)
+  
 ```
 
 ```{r}
