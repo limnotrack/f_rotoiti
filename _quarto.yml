@@ -21,19 +21,9 @@ website:
         href: data-qc.qmd
       - text: "License"
         href: LICENSE.md
-        
-  # sidebar:
-  #   style: "docked"   # options: floating, docked, overlay
-  #   search: true
-  #   contents:
-  #     - section: "Main"
-  #       contents:
-  #         - text: "Home"
-  #           href: index.qmd
-  #         - text: "Data Summary"
-  #           href: rotoehu-qc-summary.qmd
-  #         - text: "License"
-  #           href: LICENSE.md
+    right:
+      - icon: github
+        href: https://github.com/limnotrack/f_rotoiti
 
 format:
   html:
