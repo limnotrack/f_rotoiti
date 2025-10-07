@@ -517,6 +517,12 @@ qc_df |>
 
 ```
 
+However, currently NEMS does not have a classification for chlorophyll-a 
+fluorescence or meteorological data. We have therefore adapted the NEMS quality 
+control codes to include these sensors, using similar checks and adjustments 
+described in the 
+[Processing of Environmental Time-series Data](https://www.nems.org.nz/documents/data-processing) (v1.2.0, August 2024) 
+document.
 
 ```{r}
 #| label: replace-ph-values
@@ -1306,6 +1312,10 @@ Plot each variable
 
 ## Temperature
 
+Water temperature data is processed following the NEMS guidelines in
+[Water Temperature Recording](https://www.nems.org.nz/documents/water-temperature-recording) 
+(v2.0, April 2017).
+
 ```{r}
 #| label: fig-temp-qc
 #| fig.cap: "Temperature data at various depths quality control."
@@ -1323,6 +1333,10 @@ plot_var_ts_qc(data = data, var_ref_id = c("t_wtr_d50", "t_wtr_d200",
 ```
 
 ## Oxygen
+
+Dissolved oxygen data is processed following the NEMS guidelines in
+[Dissolved Oxygen](https://www.nems.org.nz/documents/dissolved-oxygen) 
+(v2.0, July 2016).
 
 ```{r}
 #| label: fig-oxygen-sat-doy-qc
@@ -1343,6 +1357,12 @@ plot_var_ts_qc(data = data, var_ref_id = c("c_do_d100", "c_do_d1800"))
 
 ## Chlorophyll
 
+Chlorophyll fluorescence sensors currently do not have a NEMS classification. 
+We have therefore adapted the NEMS quality control codes to include these 
+sensors, using similar checks and adjustments described in the 
+[Processing of Environmental Time-series Data](https://www.nems.org.nz/documents/data-processing) 
+(v1.2.0, August 2024) document.
+
 ```{r}
 #| label: fig-chla1-doy-qc
 #| fig.cap: "Chlorophyll data at 1.0m quality control."
@@ -1353,6 +1373,12 @@ plot_var_ts_qc(data = data, var_ref_id = c("f_chl_d100"))
 
 
 ## Meteorological variables
+
+Meteorological data currently do not have a NEMS classification. 
+We have therefore adapted the NEMS quality control codes to include these 
+sensors, using similar checks and adjustments described in the 
+[Processing of Environmental Time-series Data](https://www.nems.org.nz/documents/data-processing) 
+(v1.2.0, August 2024) document.
 
 ::: {.panel-tabset}
 
